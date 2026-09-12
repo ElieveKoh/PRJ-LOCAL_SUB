@@ -1,5 +1,6 @@
 {
   "port": 3000,
+  "preferredHostname": "local-sub",
   "languages": [
     {
       "code": "ko",

@@ -225,15 +225,64 @@ function lanAddresses() {
 }
 
 const PORT = config.port || 3000;
+
+// mDNS/Bonjour name. macOS reports "<name>.local" already; Windows/Linux report the bare name.
+// Same-network clients (macOS, iOS, Windows 10+) can resolve this without any setup.
+function mdnsHost() {
+  const h = os.hostname();
+  return h.includes('.') ? h : h + '.local';
+}
+
+// CJK glyphs occupy two terminal columns, so box drawing needs display width, not length.
+function width(str) {
+  let w = 0;
+  for (const ch of str) {
+    const c = ch.codePointAt(0);
+    w += (c >= 0x1100 && (c <= 0x115f || c === 0x2329 || c === 0x232a
+      || (c >= 0x2e80 && c <= 0xa4cf && c !== 0x303f)
+      || (c >= 0xac00 && c <= 0xd7a3) || (c >= 0xf900 && c <= 0xfaff)
+      || (c >= 0xfe30 && c <= 0xfe6f) || (c >= 0xff00 && c <= 0xff60)
+      || (c >= 0xffe0 && c <= 0xffe6))) ? 2 : 1;
+  }
+  return w;
+}
+
 server.listen(PORT, '0.0.0.0', () => {
   const addrs = lanAddresses();
-  console.log('====================================');
-  console.log('🚀 자막 중계 서버 기동');
-  console.log(`   호스트명 : ${os.hostname()}`);
-  console.log(`   로컬 접속: http://localhost:${PORT}`);
-  addrs.forEach((a) => console.log(`   외부 접속: http://${a.address}:${PORT}   (${a.name})`));
-  if (!addrs.length) console.log('   ⚠️  LAN 인터페이스를 찾지 못했습니다. Wi-Fi/이더넷 연결을 확인하세요.');
-  console.log('====================================');
+  const W = 46;
+  const line = (s = '', indent = 2) => {
+    const body = ' '.repeat(indent) + s;
+    return '  │' + body + ' '.repeat(Math.max(0, W - width(body))) + '│';
+  };
+  const rule = (l, m, r) => '  ' + l + '─'.repeat(W) + r;
+
+  console.log('');
+  console.log(rule('┌', '', '┐'));
+  console.log(line('자막 중계 서버 기동'));
+  console.log(rule('├', '', '┤'));
+  console.log(line('팀에 보낼 주소'));
+  console.log(line(`http://${mdnsHost()}:${PORT}`, 4));
+  console.log(rule('├', '', '┤'));
+  if (addrs.length) {
+    console.log(line('위 주소가 안 되면 — IP 직접'));
+    addrs.forEach((a) => console.log(line(`http://${a.address}:${PORT}`, 4)));
+  } else {
+    console.log(line('LAN 인터페이스를 찾지 못했습니다.'));
+    console.log(line('Wi-Fi / 이더넷 연결을 확인하세요.'));
+  }
+  console.log(rule('├', '', '┤'));
+  console.log(line(`http://localhost:${PORT}  — 이 PC에서만`));
+  console.log(rule('└', '', '┘'));
+  console.log('');
+  const bare = os.hostname().replace(/\.local$/, '');
+  if (bare !== (config.preferredHostname || 'local-sub')) {
+    console.log(`  주소를 바꾸려면 이 PC의 컴퓨터 이름을 바꾸세요 (현재: ${bare})`);
+    console.log(`    macOS  : sudo scutil --set LocalHostName ${config.preferredHostname || 'local-sub'}`);
+    console.log('    Windows: 설정 → 시스템 → 정보 → 이 PC의 이름 바꾸기');
+    console.log('');
+  }
+  console.log('  이 창을 닫으면 서버가 꺼지고 모든 자막 화면이 멈춥니다.');
+  console.log('');
 });
 
 module.exports = { app, server, io, resolveHost, ipOf };
