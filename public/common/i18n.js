@@ -3,7 +3,7 @@
   const KEY = 'sub.ui.lang';
   const DICT = {
     ko: {
-      brand: 'LIVE STENO', onAir: 'ON AIR', offAir: 'OFF AIR', noLink: '연결 없음',
+      brand: 'PRJ-LOCAL_SUB', onAir: 'ON AIR', offAir: 'OFF AIR', noLink: '연결 없음',
       subLang: '자막 언어', delay: '딜레이', sync: '동기화', buffer: '버퍼',
       bufOk: '정상', bufWait: '대기', bufFail: '실패', bufOff: '연결 끊김',
       connected: '연결된 사람', me: '나', roleTypist: '속기', roleBroadcast: '송출',
@@ -46,7 +46,7 @@ tCleared: '송출 자막을 모두 숨겼습니다',
       renamePrompt: '표시할 이름',
     },
     en: {
-      brand: 'LIVE STENO', onAir: 'ON AIR', offAir: 'OFF AIR', noLink: 'NO LINK',
+      brand: 'PRJ-LOCAL_SUB', onAir: 'ON AIR', offAir: 'OFF AIR', noLink: 'NO LINK',
       subLang: 'Subtitle', delay: 'Delay', sync: 'Sync', buffer: 'Buffer',
       bufOk: 'OK', bufWait: 'Queued', bufFail: 'Failed', bufOff: 'Offline',
       connected: 'Connected', me: 'me', roleTypist: 'Typist', roleBroadcast: 'Output',
