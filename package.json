@@ -1,0 +1,16 @@
+{
+  "name": "prj_local_sub",
+  "version": "1.0.0",
+  "description": "Local Subtitle System - realtime multilingual subtitle input & chroma-key broadcast",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "smoke": "node scripts/smoke-socket.js",
+    "test:hotkeys": "node scripts/hotkey-rules-test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.8.3"
+  }
+}

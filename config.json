@@ -1,0 +1,47 @@
+{
+  "port": 3000,
+  "languages": [
+    {
+      "code": "ko",
+      "name": "한국어"
+    },
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "zh",
+      "name": "中文"
+    }
+  ],
+  "room": {
+    "defaultDelayMs": 2000,
+    "maxDelayMs": 10000,
+    "bufferSize": 4
+  },
+  "defaultSettings": {
+    "bgMode": "chroma",
+    "bgColor": "#00FF00",
+    "textColor": "#FFFFFF",
+    "outlineColor": "#000000",
+    "outlineWidth": 2,
+    "fontFamily": "Pretendard, 'Noto Sans KR', -apple-system, sans-serif",
+    "fontSize": 48,
+    "fontWeight": 700,
+    "letterSpacing": 0,
+    "lineHeight": 1.35,
+    "paddingX": 64,
+    "paddingY": 48,
+    "align": "center",
+    "baseLines": 2,
+    "maxLines": 4,
+    "minDurationMs": 2500,
+    "shrinkIdleMs": 1500,
+    "fadeMs": 250,
+    "safeArea": "fit"
+  }
+}

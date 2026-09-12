@@ -1,0 +1,11 @@
+node_modules/
+npm-debug.log*
+.DS_Store
+
+# internal planning notes: contain real names and internal workflow details
+.claude/
+
+# local operator overrides
+config.local.json
+.env
+.env.*

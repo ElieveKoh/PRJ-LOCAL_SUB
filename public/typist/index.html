@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자막 입력 — Typist</title>
+<link rel="stylesheet" href="/typist/style.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-grp brand">
+    <span class="wordmark" data-i18n="brand">LIVE STENO</span>
+    <span class="onair" id="onAir"><i></i><b>OFF AIR</b></span>
+    <span class="langbadge" id="langBadge">
+      <em data-i18n="subLang">자막 언어</em>
+      <b id="langName">—</b>
+      <u id="langCode">—</u>
+    </span>
+  </div>
+
+  <div class="bar-grp telemetry">
+    <span class="tel" id="telDelay"><em data-i18n="delay">딜레이</em><b>—</b></span>
+    <span class="tel" id="telSync"><em data-i18n="sync">동기화</em><b>—</b></span>
+    <span class="tel" id="telBuffer"><em data-i18n="buffer">버퍼</em><b>—</b></span>
+  </div>
+
+  <div class="bar-grp right">
+    <span class="peerlabel" data-i18n="connected">연결된 사람</span>
+    <div class="peers" id="peers"></div>
+    <div class="uilang" id="uiLang" role="group" aria-label="UI language">
+      <button data-ui="ko">한국어</button><button data-ui="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="grid">
+  <section class="col-left">
+    <div class="video" id="video">
+      <div class="video-hud">
+        <span class="tc" id="timecode">SESSION 00:00:00</span>
+        <span class="proto" id="proto" data-i18n="noSignal">NO SIGNAL</span>
+      </div>
+      <div class="video-ph" id="videoPh">
+        <div class="ph-icon">▶</div>
+        <div class="ph-t" data-i18n="noVideo">영상 입력 없음</div>
+        <div class="ph-s" data-i18n-html="noVideoSub"></div>
+      </div>
+      <div class="overlay" id="overlay"></div>
+      <div class="overlay-tag" data-i18n="preview">송출 미리보기</div>
+    </div>
+
+    <div class="monitor" id="monitor">
+      <div class="sec-h"><span data-i18n="monitor">실시간 모니터링</span><span class="sec-s" id="monitorWho"></span></div>
+      <div class="monitor-body" id="monitorBody"></div>
+    </div>
+  </section>
+
+  <section class="col-right">
+    <div class="tabs">
+      <span class="tab on" data-i18n="tabHistory">최근 전송</span>
+      <span class="sec-s" id="histCount"></span>
+    </div>
+
+    <!-- newest at the bottom, the way subtitles actually stack on screen -->
+    <ul class="history" id="history"></ul>
+  </section>
+</main>
+
+<footer class="composer">
+  <div class="hkstrip" id="hkStrip"></div>
+
+  <div class="input-row">
+    <div class="input-wrap">
+      <textarea id="input" rows="2"></textarea>
+      <span class="counter" id="counter">0</span>
+    </div>
+    <button id="btnSend" class="send"><span data-i18n="send">전송</span><small>⏎</small></button>
+  </div>
+
+  <div class="ctl-row">
+    <div class="delay-ctl">
+      <label for="delay" data-i18n="delayLabel">전송 딜레이</label>
+      <input type="range" id="delay" min="0" max="10000" step="100" value="0">
+      <b id="delayVal">0.0s</b>
+      <span class="tag" data-i18n="shared">방 공통</span>
+    </div>
+    <div class="ctl-actions">
+      <button id="btnRevoke" class="ghost"><span data-i18n="btnRevoke">직전 회수</span><small>Ctrl+⌫</small></button>
+      <button id="btnClear" class="ghost danger"><span data-i18n="btnClear">화면 비우기</span><small>Esc</small></button>
+    </div>
+  </div>
+  <div class="warn" id="warn"></div>
+</footer>
+
+<div class="modal" id="hkModal" hidden>
+  <div class="modal-back" id="hkBack"></div>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <b data-i18n="hkTitle">핫키 설정</b>
+      <button class="modal-x" id="hkClose" aria-label="close">✕</button>
+    </div>
+    <p class="hkhint" data-i18n="hkHint"></p>
+    <p class="hksafe" data-i18n="hkSafe"></p>
+    <div class="hkhead">
+      <span data-i18n="hkColKey">단축키</span>
+      <span data-i18n="hkColLabel">표시 이름</span>
+      <span data-i18n="hkColText">입력할 문장</span>
+      <span></span>
+    </div>
+    <div class="hkrows" id="hkRows"></div>
+    <button class="hkadd" id="hkAdd" data-i18n="hkAdd">+ 핫키 추가</button>
+    <div class="modal-foot">
+      <button class="btn-ghost" id="hkCancel" data-i18n="hkCancel">취소</button>
+      <button class="btn-primary" id="hkSave" data-i18n="hkSave">저장하고 닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" class="toasts"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/common/i18n.js"></script>
+<script src="/common/socket-client.js"></script>
+<script src="/typist/app.js"></script>
+</body>
+</html>

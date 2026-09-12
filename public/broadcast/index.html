@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자막 송출</title>
+<link rel="stylesheet" href="/broadcast/style.css">
+</head>
+<body>
+<div id="stage" class="stage">
+  <div id="safe" class="safe">
+    <div id="queue" class="queue"></div>
+  </div>
+</div>
+
+<!-- offline indicator: always visible, deliberately tiny -->
+<div id="offdot" class="offdot" hidden title="서버 연결 끊김"></div>
+
+<!-- hover chrome; invisible to the switcher because it only appears on mouse move -->
+<div id="chrome" class="chrome">
+  <div class="peers" id="peers"></div>
+  <button id="btnGear" title="설정">⚙</button>
+  <button id="btnFull" title="전체화면">⛶</button>
+</div>
+
+<aside id="panel" class="panel" hidden>
+  <div class="panel-head">
+    <b>송출 설정</b>
+    <button id="btnClose">✕</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+  <div class="panel-foot">
+    <div class="urlbox">
+      <label>Kiswe Studio에 붙여넣을 URL</label>
+      <textarea id="genUrl" readonly rows="3"></textarea>
+      <div class="urlrow">
+        <button id="btnCopy" class="primary">URL 복사</button>
+        <button id="btnReset">기본값으로</button>
+        <button id="btnPreview">미리보기 자막</button>
+      </div>
+      <p class="note">이 창은 <b>내 PC 리허설용</b>입니다. Studio는 URL만 열 뿐 설정을 건드릴 수 없으므로,
+      여기서 맞춘 뒤 위 URL을 복사해 Studio에 넣으세요.</p>
+    </div>
+  </div>
+</aside>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/common/socket-client.js"></script>
+<script src="/common/settings.js"></script>
+<script src="/broadcast/app.js"></script>
+</body>
+</html>
