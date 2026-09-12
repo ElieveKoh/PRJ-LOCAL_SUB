@@ -18,7 +18,7 @@ npm start
 
 ```
 🚀 자막 중계 서버 기동
-   호스트명 : studio-pc
+   호스트명 : server-pc
    로컬 접속: http://localhost:3000
    외부 접속: http://192.168.0.11:3000   (en0)
 ```

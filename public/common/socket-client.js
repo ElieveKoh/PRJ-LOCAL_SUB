@@ -1,5 +1,6 @@
 /* Shared socket bootstrap for both views.
-   URL params are the single source of truth (Kiswe Studio cannot touch page settings). */
+   URL params are the single source of truth: the output software only opens a URL and
+   cannot reach the page's own settings. */
 (function (global) {
   const params = new URLSearchParams(location.search);
   const NAME_KEY = 'sub.typist.name';

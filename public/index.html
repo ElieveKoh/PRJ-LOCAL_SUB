@@ -77,7 +77,7 @@ fetch('/api/config')
     window.__cfg = cfg;
     document.getElementById('net').innerHTML =
       `이 페이지 주소를 다른 PC에 그대로 입력하세요 → <code>${location.origin}</code><br>` +
-      `송출 화면을 연 뒤 우상단 <b>⚙</b> → 설정을 맞추고 <b>URL 복사</b> → Kiswe Studio에 붙여넣으세요.`;
+      `송출 화면을 연 뒤 우상단 <b>⚙</b> → 설정을 맞추고 <b>URL 복사</b> → 송출 소프트웨어에 붙여넣으세요.`;
     render(cfg);
   })
   .catch(() => {

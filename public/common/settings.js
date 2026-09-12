@@ -1,5 +1,5 @@
 /* Settings resolution: URL params > localStorage > config.json defaults.
-   URL wins because Kiswe Studio only opens a URL and cannot touch the page. */
+   URL wins because the output software only opens a URL and cannot touch the page. */
 (function (global) {
   const NUM = new Set(['fontSize', 'fontWeight', 'letterSpacing', 'lineHeight', 'paddingX', 'paddingY',
                        'baseLines', 'maxLines', 'minDurationMs', 'shrinkIdleMs', 'fadeMs', 'outlineWidth']);
