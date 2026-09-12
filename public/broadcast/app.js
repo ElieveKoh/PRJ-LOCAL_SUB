@@ -17,6 +17,19 @@
 
   document.title = `[${conn.lang}] 자막 송출`;
 
+  // The page may be rendered on a machine we do not control (a switcher PC, or a cloud
+  // renderer), which will not have Korean/Japanese/Chinese fonts installed. Ship the face
+  // with the page instead of hoping the host has it - otherwise subtitles render as tofu.
+  const WEBFONT = { ko: 'Noto+Sans+KR', ja: 'Noto+Sans+JP', zh: 'Noto+Sans+SC' };
+  (function loadFont() {
+    const fam = WEBFONT[conn.lang];
+    if (!fam) return;
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = `https://fonts.googleapis.com/css2?family=${fam}:wght@400;500;700;900&display=swap`;
+    document.head.appendChild(l);
+  })();
+
   const FIELDS = [
     ['배경', [
       ['bgMode', 'select', { options: [['chroma', '크로마키'], ['solid', '단색'], ['transparent', '투명(알파)']] }],

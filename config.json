@@ -30,7 +30,7 @@
     "textColor": "#FFFFFF",
     "outlineColor": "#000000",
     "outlineWidth": 2,
-    "fontFamily": "Pretendard, 'Noto Sans KR', -apple-system, sans-serif",
+    "fontFamily": "'Noto Sans KR','Noto Sans JP','Noto Sans SC',Pretendard,-apple-system,sans-serif",
     "fontSize": 48,
     "fontWeight": 700,
     "letterSpacing": 0,
