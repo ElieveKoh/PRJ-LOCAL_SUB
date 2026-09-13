@@ -1,5 +1,8 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden;background:#000}
+/* alpha mode: the page itself must be see-through, not just the stage, or the black
+   body paints over whatever the compositor puts behind it */
+html.alpha,html.alpha body{background:transparent}
 body{cursor:none}
 body.hover{cursor:default}
 

@@ -79,7 +79,9 @@
 
   function applySettings() {
     const st = el.stage.style;
-    el.stage.classList.toggle('transparent', S.bgMode === 'transparent');
+    const alpha = S.bgMode === 'transparent';
+    el.stage.classList.toggle('transparent', alpha);
+    document.documentElement.classList.toggle('alpha', alpha);
     st.setProperty('--bg', S.bgMode === 'solid' ? S.bgColor : S.bgColor);
     const q = el.queue.style;
     q.setProperty('--fg', S.textColor);
