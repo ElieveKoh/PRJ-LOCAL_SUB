@@ -10,6 +10,18 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
+// Page hits are logged, static assets are not. This is what tells you whether something
+// actually reached the server - a renderer that loads the page but cannot open a websocket
+// shows up here and nowhere else.
+app.use((req, res, next) => {
+  if (!/\.(css|js|png|jpg|svg|ico|map|woff2?)$/i.test(req.path) && !req.path.startsWith('/socket.io')) {
+    const ip = (req.socket.remoteAddress || '').replace(/^::ffff:/, '');
+    const ts = new Date().toTimeString().slice(0, 8);
+    console.log(`  ${ts}  HTTP  ${req.method} ${req.originalUrl}  ← ${ip}`);
+  }
+  next();
+});
+
 // routes first: express.static would 301 /typist -> /typist/ otherwise
 app.get('/api/config', (req, res) => res.json(config));
 app.get('/typist', (req, res) => res.sendFile(path.join(__dirname, 'public/typist/index.html')));
