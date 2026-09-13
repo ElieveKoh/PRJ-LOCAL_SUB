@@ -199,8 +199,21 @@
   conn.on('peers', (list) => renderPeers(list));
   conn.onStatus((s) => {
     el.offdot.hidden = s === 'online';
+    if (s === 'unauthorized') showAuthError();
     renderPeers();
   });
+
+  // A switcher cannot type a password, so say what is wrong right on the output surface.
+  function showAuthError() {
+    if (document.getElementById('authErr')) return;
+    const d = document.createElement('div');
+    d.id = 'authErr';
+    d.style.cssText = 'position:fixed;inset:0;z-index:90;display:flex;align-items:center;'
+      + 'justify-content:center;background:#111;color:#ff8a8e;font-size:20px;text-align:center;'
+      + 'font-family:-apple-system,sans-serif;padding:24px;line-height:1.6';
+    d.textContent = '비밀번호가 필요합니다 — 주소 끝에 ?pw=... 를 붙여 주세요';
+    document.body.appendChild(d);
+  }
 
   function renderPeers(list) {
     if (list) peerList = list;

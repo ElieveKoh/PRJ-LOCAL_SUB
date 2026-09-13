@@ -2,6 +2,13 @@
 const { io } = require('socket.io-client');
 const URL = process.env.URL || 'http://localhost:3000';
 
+// the server may be password protected; pick the password up the same way it does
+function password() {
+  if (process.env.SUB_PASSWORD) return process.env.SUB_PASSWORD;
+  try { return (require('../config.local.json').auth || {}).password || ''; } catch (e) { return ''; }
+}
+const PW = password();
+
 const log = [];
 const ok = (c, m) => { log.push(`${c ? 'PASS' : 'FAIL'}  ${m}`); if (!c) process.exitCode = 1; };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -18,7 +25,8 @@ function mk(lang, role, name) {
   s.on('peers', (d) => got.peers = d);
   s.on('state_sync', (d) => got.sync = d);
   s.on('delay_changed', (d) => got.delay.push(d));
-  s.on('connect', () => s.emit('join', { lang, role, name }));
+  s.on('connect', () => s.emit('join', { lang, role, name, pw: PW }));
+  s.on('auth_failed', () => { console.error('FAIL  인증 거부됨 — 비밀번호를 확인하세요'); process.exit(1); });
   return { s, got, name };
 }
 

@@ -157,10 +157,16 @@
     el.timecode.classList.toggle('rec', onAirIds.size > 0);
   }, 1000);
 
+  let gating = false;
   conn.onStatus((s) => {
     el.input.classList.toggle('offline', s !== 'online');
     el.btnSend.disabled = s !== 'online';
     if (s === 'offline') toast(T('tOffline'), true);
+    if (s === 'unauthorized' && !gating) {
+      gating = true;
+      SubAuth.clear();
+      SubAuth.gate({ title: T('brand'), note: '비밀번호가 필요합니다.' }).then(() => location.reload());
+    }
     renderPeers();
   });
   conn.on('peers', (list) => {

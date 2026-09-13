@@ -4,7 +4,28 @@ const os = require('os');
 const dns = require('dns');
 const path = require('path');
 const { Server } = require('socket.io');
-const config = require('./config.json');
+const baseConfig = require('./config.json');
+
+// The real password never lives in the repo: it comes from the environment, or from a
+// gitignored config.local.json. config.json ships with auth off and an empty password.
+function loadConfig() {
+  const merged = JSON.parse(JSON.stringify(baseConfig));
+  try {
+    const local = require('./config.local.json');
+    Object.keys(local).forEach((k) => {
+      merged[k] = (local[k] && typeof local[k] === 'object' && !Array.isArray(local[k]))
+        ? Object.assign({}, merged[k], local[k]) : local[k];
+    });
+  } catch (e) { /* optional */ }
+  if (process.env.SUB_PASSWORD) {
+    merged.auth = Object.assign({}, merged.auth, { enabled: true, password: process.env.SUB_PASSWORD });
+  }
+  return merged;
+}
+const config = loadConfig();
+const AUTH = config.auth || { enabled: false, password: '' };
+const authOn = () => Boolean(AUTH.enabled && AUTH.password);
+const authOk = (pw) => !authOn() || String(pw || '') === String(AUTH.password);
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +44,20 @@ app.use((req, res, next) => {
 });
 
 // routes first: express.static would 301 /typist -> /typist/ otherwise
-app.get('/api/config', (req, res) => res.json(config));
+app.get('/api/config', (req, res) => {
+  const safe = JSON.parse(JSON.stringify(config));
+  delete safe.auth;
+  safe.authRequired = authOn();
+  res.json(safe);
+});
+
+app.use(express.json({ limit: '4kb' }));
+
+app.post('/api/login', (req, res) => {
+  const ok = authOk(req.body && req.body.pw);
+  if (!ok) console.log(`  로그인 실패  ← ${(req.socket.remoteAddress || '').replace(/^::ffff:/, '')}`);
+  res.status(ok ? 200 : 401).json({ ok });
+});
 app.get('/typist', (req, res) => res.sendFile(path.join(__dirname, 'public/typist/index.html')));
 app.get('/broadcast', (req, res) => res.sendFile(path.join(__dirname, 'public/broadcast/index.html')));
 
@@ -86,6 +120,10 @@ io.on('connection', (socket) => {
   let me = null;
 
   socket.on('join', async (data = {}) => {
+    if (!authOk(data.pw)) {
+      socket.emit('auth_failed');
+      return;
+    }
     lang = String(data.lang || 'ko');
     const state = getRoom(lang);
     const ip = ipOf(socket);
@@ -331,6 +369,10 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log('    Windows: 설정 → 시스템 → 정보 → 이 PC의 이름 바꾸기');
     console.log('');
   }
+  console.log(authOn()
+    ? '  🔒 비밀번호가 설정되어 있습니다. 접속 시 입력이 필요합니다.'
+    : '  ⚠️  비밀번호 없음 — 같은 네트워크의 누구나 자막을 보낼 수 있습니다.');
+  console.log('');
   console.log('  이 창을 닫으면 서버가 꺼지고 모든 자막 화면이 멈춥니다.');
   console.log('');
 });

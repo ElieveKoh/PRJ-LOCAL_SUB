@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>실시간 자막 시스템 대시보드</title>
+<link rel="stylesheet" href="/common/auth.css">
 <style>
   :root { --bd:#e3e6ea; --mut:#6b7280; }
   * { box-sizing: border-box; }
@@ -42,6 +43,7 @@
   <div id="channels">채널 정보를 불러오는 중입니다…</div>
 </div>
 
+<script src="/common/auth.js"></script>
 <script>
 const NAME_KEY = 'sub.typist.name';
 const who = document.getElementById('who');
@@ -56,6 +58,8 @@ function render(cfg) {
   const name = (localStorage.getItem(NAME_KEY) || '').trim();
   const q = (lang, extra) => `?lang=${encodeURIComponent(lang)}` + (extra || '');
   const nameQ = name ? `&name=${encodeURIComponent(name)}` : '';
+  const pw = SubAuth.token();
+  const pwQ = pw ? `&pw=${encodeURIComponent(pw)}` : '';
   const box = document.getElementById('channels');
   box.innerHTML = '';
   cfg.languages.forEach(lang => {
@@ -64,14 +68,15 @@ function render(cfg) {
     s.innerHTML = `
       <div class="lang-title">${lang.name} 채널 <span class="badge">${lang.code}</span></div>
       <div class="btn-group">
-        <a class="btn btn-typist" target="_blank" href="/typist${q(lang.code, nameQ)}">⌨️ 타이피스트 (입력)</a>
-        <a class="btn btn-broadcast" target="_blank" href="/broadcast${q(lang.code)}">📺 송출용 화면 (크로마키)</a>
+        <a class="btn btn-typist" target="_blank" href="/typist${q(lang.code, nameQ + pwQ)}">⌨️ 타이피스트 (입력)</a>
+        <a class="btn btn-broadcast" target="_blank" href="/broadcast${q(lang.code, pwQ)}">📺 송출용 화면 (크로마키)</a>
       </div>`;
     box.appendChild(s);
   });
 }
 
-fetch('/api/config')
+SubAuth.ensure({ title: '실시간 자막 시스템', note: '계속하려면 비밀번호를 입력하세요.' })
+  .then(() => fetch('/api/config'))
   .then(r => r.json())
   .then(cfg => {
     window.__cfg = cfg;

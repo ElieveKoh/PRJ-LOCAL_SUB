@@ -1,6 +1,10 @@
 {
   "port": 3000,
   "preferredHostname": "local-sub",
+  "auth": {
+    "enabled": false,
+    "password": ""
+  },
   "languages": [
     {
       "code": "ko",

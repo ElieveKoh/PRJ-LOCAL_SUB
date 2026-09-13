@@ -1,0 +1,26 @@
+.sub-gate{
+  position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:#0b0e12;
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+.sub-gate-box{
+  width:min(360px,100%);display:flex;flex-direction:column;gap:.6rem;
+  background:#12161c;border:1px solid #2a313b;border-radius:10px;padding:1.6rem 1.5rem 1.4rem;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);
+}
+.sub-gate-box h1{margin:0;font-size:1.05rem;color:#e7ebf0;letter-spacing:-.01em}
+.sub-gate-box p{margin:0 0 .4rem;font-size:.8rem;color:#8b95a3;line-height:1.6}
+.sub-gate-box input[type=password]{
+  background:#0e1217;border:1px solid #2a313b;border-radius:6px;color:#e7ebf0;
+  padding:.6rem .7rem;font-size:1rem;font-family:inherit;outline:none;
+}
+.sub-gate-box input[type=password]:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.16)}
+.sub-gate-remember{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#8b95a3;cursor:pointer}
+.sub-gate-remember input{accent-color:#3b82f6}
+.sub-gate-box button{
+  background:#3b82f6;border:1px solid #3b82f6;color:#fff;border-radius:6px;
+  padding:.55rem;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer;margin-top:.2rem;
+}
+.sub-gate-box button:hover{filter:brightness(1.08)}
+.sub-gate-box.busy button{opacity:.6;pointer-events:none}
+.sub-gate-err{min-height:1.1em;font-size:.75rem;color:#ef4444}

@@ -53,10 +53,14 @@
     }
 
     socket.on('connect', () => {
-      socket.emit('join', { lang, role, name, cid: clientId() });
+      socket.emit('join', {
+        lang, role, name, cid: clientId(),
+        pw: (global.SubAuth ? global.SubAuth.token() : ''),
+      });
       setStatus('online');
     });
     socket.on('disconnect', () => setStatus('offline'));
+    socket.on('auth_failed', () => setStatus('unauthorized'));
     socket.io.on('reconnect_attempt', () => setStatus('reconnecting'));
 
     // round-trip measurement drives the connection LED
