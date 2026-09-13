@@ -53,12 +53,26 @@ function getRoom(lang) {
 
 const typistRoom = (lang) => `${lang}:typist`;
 
+// Report one screen, not a blend of all of them. Several output views drain their queues at
+// slightly different moments, so relaying whichever spoke last let a laggard resurrect lines
+// that had already left the other screens - the status oscillated and never settled.
+// The longest-connected screen is the canonical one; if it leaves, the next-oldest takes over.
+function canonicalBroadcast(state) {
+  let best = null;
+  state.users.forEach((u) => {
+    if (u.role !== 'broadcast') return;
+    if (!state.onair.has(u.id)) return;
+    if (!best || u.since < best.since) best = u;
+  });
+  return best;
+}
+
 function emitOnAir(lang) {
   const state = roomState[lang];
   if (!state) return;
-  let latest = { ids: [], texts: [], at: 0 };
-  state.onair.forEach((v) => { if (v.at > latest.at) latest = v; });
-  io.to(typistRoom(lang)).emit('onair', { ids: latest.ids, texts: latest.texts });
+  const bc = canonicalBroadcast(state);
+  const v = bc ? state.onair.get(bc.id) : null;
+  io.to(typistRoom(lang)).emit('onair', { ids: v ? v.ids : [], texts: v ? v.texts : [] });
 }
 
 function emitPeers(lang) {
@@ -92,6 +106,12 @@ io.on('connection', (socket) => {
     if (me.role === 'typist') socket.join(typistRoom(lang));
     state.users.set(socket.id, me);
     console.log(`[${lang}] + ${me.role} ${me.name} (${host} / ${ip})`);
+
+    if (me.role === 'typist') {
+      const bc = canonicalBroadcast(state);
+      const v = bc ? state.onair.get(bc.id) : null;
+      socket.emit('onair', { ids: v ? v.ids : [], texts: v ? v.texts : [] });
+    }
 
     socket.emit('state_sync', {
       lines: state.lines,
