@@ -97,7 +97,8 @@
 
     el.warn.textContent = !online ? T('warnOffline')
       : dupName ? T('warnDupName')
-      : bc === 0 ? T('warnNoBroadcast') : '';
+      : bc === 0 ? T('warnNoBroadcast')
+      : bc > 1 ? T('warnManyBc', bc) : '';
   }
   function setTel(node, text, cls) {
     node.querySelector('b').textContent = text;

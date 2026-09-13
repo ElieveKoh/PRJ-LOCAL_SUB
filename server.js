@@ -45,12 +45,21 @@ function getRoom(lang) {
       delayMs: ROOM_CFG.defaultDelayMs || 0,
       pending: new Map(),
       users: new Map(),
+      onair: new Map(),
     };
   }
   return roomState[lang];
 }
 
 const typistRoom = (lang) => `${lang}:typist`;
+
+function emitOnAir(lang) {
+  const state = roomState[lang];
+  if (!state) return;
+  let latest = { ids: [], texts: [], at: 0 };
+  state.onair.forEach((v) => { if (v.at > latest.at) latest = v; });
+  io.to(typistRoom(lang)).emit('onair', { ids: latest.ids, texts: latest.texts });
+}
 
 function emitPeers(lang) {
   const state = roomState[lang];
@@ -191,16 +200,25 @@ io.on('connection', (socket) => {
     killed.forEach((pendingId) => io.to(typistRoom(lang)).emit('pending_cancel', { pendingId }));
   });
 
-  // the broadcast view is the only place that knows what is actually on screen right now
+  // Only the output view knows what is actually on screen. Several may be connected at once
+  // (a second switcher, a leftover tab), so keep each one's report separately and relay the
+  // freshest - otherwise their queues interleave and lines look stuck on air forever.
   socket.on('onair', (data = {}) => {
-    if (!lang) return;
-    io.to(typistRoom(lang)).emit('onair', { ids: Array.isArray(data.ids) ? data.ids : [], texts: data.texts || [] });
+    if (!lang || !me || me.role !== 'broadcast') return;
+    const state = getRoom(lang);
+    state.onair.set(socket.id, {
+      ids: Array.isArray(data.ids) ? data.ids : [],
+      texts: Array.isArray(data.texts) ? data.texts : [],
+      at: Date.now(),
+    });
+    emitOnAir(lang);
   });
 
   socket.on('disconnect', () => {
     if (!lang || !me) return;
     const state = getRoom(lang);
     state.users.delete(socket.id);
+    if (state.onair.delete(socket.id)) emitOnAir(lang);
     // pending items are intentionally left to fire - they were already committed
     socket.to(typistRoom(lang)).emit('typing_update', { from: me.name, fromId: socket.id, text: '', ts: Date.now() });
     console.log(`[${lang}] - ${me.role} ${me.name}`);
