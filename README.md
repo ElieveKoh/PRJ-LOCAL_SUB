@@ -231,37 +231,46 @@ scripts/
 
 ## 7. 송출 화면을 스위처에 물리기
 
-### 권장 — 스위처의 Web source에 URL 직접 입력
+### 권장 — 스위처의 Web source에 URL 직접 입력 (실측 확인됨)
 
-스위처에 웹 주소를 넣는 입력(Web source 등)이 있다면 **그게 가장 좋다.** 실측으로 확인된 경로다.
+스위처에 웹 주소를 넣는 입력(Web source 등)이 있다면 **그게 가장 좋다.**
 
 1. 스위처에서 Web source 입력을 만든다
-2. 송출 주소를 넣는다 — `http://local-sub.local:3000/broadcast?lang=ko`
-3. 크로마키 색을 `#00FF00` 으로 지정한다
+2. **투명 배경** 주소를 넣는다
+
+   ```
+   http://local-sub.local:3000/broadcast?lang=ko&bgMode=transparent
+   ```
+
+3. 끝. 크로마키 설정이 필요 없다.
 
 언어별로 입력을 하나씩 만들고 `lang` 만 바꾸면 **여러 언어를 동시에 송출할 수 있다.**
 
 ```
-http://local-sub.local:3000/broadcast?lang=ko
-http://local-sub.local:3000/broadcast?lang=en
-http://local-sub.local:3000/broadcast?lang=ja
+http://local-sub.local:3000/broadcast?lang=ko&bgMode=transparent
+http://local-sub.local:3000/broadcast?lang=en&bgMode=transparent
+http://local-sub.local:3000/broadcast?lang=ja&bgMode=transparent
 ```
+
+**`&bgMode=transparent` 를 꼭 붙인다.** 붙이지 않으면 초록 배경이 그대로 영상을 덮는다.
+스위처가 웹 소스에는 크로마키를 적용하지 못할 수 있는데, 투명 배경으로 내보내면
+애초에 키잉이 필요 없다.
 
 이 경로의 장점:
 
 - **추가 PC·소프트웨어가 필요 없다.** OBS도 가상카메라도 쓰지 않는다
 - **네트워크 부하가 사실상 없다.** 오가는 건 자막 텍스트뿐이라 초당 수 KB 수준이다
-- **화질이 가장 좋다.** 페이지를 직접 렌더링하므로 가상카메라 경로의 색상 압축이 없고,
-  아래 "글자 가장자리에 녹색이 번질 때" 문제 자체가 생기지 않는다
+- **화질이 가장 좋다.** 크로마키를 거치지 않으므로 글자 가장자리 녹색 번짐이 원천적으로 없고,
+  외곽선도 자연스럽게 반투명 처리된다
+- **배경색 충돌이 없다.** 출연자가 녹색 옷을 입어도 상관없다
 
-> **스위처가 이 서버에 도달할 수 있어야 한다.** 스위처가 같은 네트워크에 있거나
-> 오퍼레이터 PC에서 페이지를 렌더링하면 그대로 된다. 도달하는지 확인하려면
-> URL 끝에 `&src=test` 를 붙여 넣고 서버 창에 `GET /broadcast?lang=ko&src=test` 가
-> 찍히는지 보면 된다. 아무것도 안 찍히면 아래 OBS 경로를 쓴다.
+> 스위처가 이 서버에 도달하는지 확인하려면 URL 끝에 `&src=test` 를 붙여 넣고
+> 서버 창에 `GET /broadcast?...&src=test` 가 찍히는지 보면 된다.
 
 ### 대안 — OBS 경유
 
-Web source 입력이 없거나 스위처가 이 서버에 도달하지 못할 때 쓴다.
+Web source 입력이 없거나, 스위처가 이 서버에 도달하지 못하거나, 웹 소스의 투명 배경을 지원하지 않을 때 쓴다.
+이 경로에서는 배경을 `크로마키`로 두고 스위처에서 키잉한다.
 
 OBS에는 URL을 직접 렌더링하는 **브라우저 소스**가 있다. 창을 캡처하는 것보다 모든 면에서 낫다.
 
