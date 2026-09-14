@@ -8,6 +8,9 @@
   --fg:#e8edf3; --fg2:#aab4c0; --mut:#6f7b89;
   --acc:#4b8cf7; --ok:#2fbf6d; --warn:#e6a233; --bad:#e5484d;
   --barTop:#141920; --barBot:#10141a;
+  --compTop:#10141a; --compBot:#0d1116;
+  --phText:#4c5764; --toastBg:#0a0d11; --toastFg:var(--fg);
+  --bar1:#232a33; --bar2:#323b47;
   --accFg:#9cc2ff; --accFg2:#8fb8ff; --accFg3:#cfe0ff;
   --badFg:#ff7b7f; --badFg2:#ff8a8e; --okFg:#8fe3b4;
   --mineFg:#9cc2ff; --theirsFg:#c3a8f0; --theirsBd:#8a6ae0;
@@ -26,6 +29,9 @@
   --badFg:#b93b3f; --badFg2:#a8343a; --okFg:#1a7a4a;
   --mineFg:#2a5f9e; --theirsFg:#5f3f9c; --theirsBd:#8a6ae0;
   --langEm:#33639b; --langB:#12314f;
+  --compTop:#ffffff; --compBot:#f3f6fb;
+  --phText:#97a2b3; --toastBg:#1b2330; --toastFg:#f2f5f9;
+  --bar1:#c9d2de; --bar2:#b1bccc;
   --modalBack:rgba(20,26,35,.42); --modalShadow:0 18px 44px rgba(20,26,35,.18);
 }
 *{box-sizing:border-box}
@@ -76,10 +82,10 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .uilang button:hover{color:var(--fg)}
 .uilang button.on{background:var(--acc);color:#fff}
 .themebtn{background:var(--sunk);border:1px solid var(--bd2);border-radius:var(--r);color:var(--fg2);
-  font-family:inherit;font-size:11px;font-weight:700;padding:.24rem .5rem;cursor:pointer;line-height:1.5}
+  font-family:inherit;font-size:13px;padding:.16rem .42rem;cursor:pointer;line-height:1.45}
 .themebtn:hover{border-color:var(--acc);color:var(--accFg)}
 
-.tel{display:inline-flex;align-items:baseline;gap:.4rem;padding:.28rem .6rem;border-radius:var(--r);
+.tel{cursor:help;display:inline-flex;align-items:baseline;gap:.4rem;padding:.28rem .6rem;border-radius:var(--r);
   border:1px solid var(--bd);background:var(--panel);white-space:nowrap}
 .tel em{font-style:normal;font-size:10px;color:var(--mut);letter-spacing:.05em}
 .tel b{font-family:var(--mono);font-size:11.5px;color:var(--fg);font-weight:600}
@@ -267,7 +273,10 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .hkhead,.hkrow{display:grid;grid-template-columns:10.5rem 8.5rem 1fr 2.4rem;gap:.4rem;align-items:center}
 .hkhead{padding:0 .1rem .35rem;font-size:9.5px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;color:var(--mut)}
-.hkrows{display:flex;flex-direction:column;gap:.35rem}
+/* Adding a row used to push the + button down, so the next click landed on empty space.
+   The list owns a fixed band and scrolls inside it; the button stays where it was. */
+.hkrows{display:flex;flex-direction:column;gap:.35rem;
+  height:250px;overflow-y:auto;padding-right:.25rem}
 .hkrow input{background:var(--sunk);border:1px solid var(--bd);border-radius:5px;color:var(--fg);
   font-family:inherit;font-size:12px;padding:.4rem .5rem;min-width:0;outline:none}
 .hkrow input:focus{border-color:var(--acc)}
@@ -315,14 +324,14 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .hkchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ============ composer ============ */
-.composer{flex:0 0 auto;background:linear-gradient(180deg,#10141a,#0d1116);
+.composer{flex:0 0 auto;background:linear-gradient(180deg,var(--compTop),var(--compBot));
   border-top:1px solid var(--bd);padding:.7rem .85rem .5rem}
 .input-row{display:flex;gap:.6rem;align-items:stretch}
 .input-wrap{position:relative;flex:1 1 auto;min-width:0}
 #input{width:100%;height:100%;background:var(--sunk);border:1px solid var(--bd2);border-radius:var(--r);
   color:var(--fg);font-size:19px;line-height:1.4;padding:.55rem 3.6rem .55rem .8rem;resize:none;
   font-family:inherit;outline:none;transition:border-color .12s,box-shadow .12s}
-#input::placeholder{font-size:13px;color:#4c5764}
+#input::placeholder{font-size:13px;color:var(--phText)}
 #input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(75,140,247,.14)}
 #input.warn{border-color:var(--warn);box-shadow:0 0 0 3px rgba(230,162,51,.12)}
 #input.offline{border-color:var(--bad);box-shadow:0 0 0 3px rgba(229,72,77,.14)}
@@ -360,12 +369,12 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 /* ============ toasts ============ */
 .toasts{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;
   gap:.35rem;align-items:center;pointer-events:none;z-index:60}
-.toast{background:#0a0d11;border:1px solid var(--bd2);border-radius:6px;padding:.4rem .8rem;
-  font-size:11.5px;box-shadow:0 8px 24px rgba(0,0,0,.55);animation:pop .16s ease}
+.toast{background:var(--toastBg);color:var(--toastFg);border:1px solid var(--bd2);border-radius:6px;
+  padding:.4rem .8rem;font-size:11.5px;box-shadow:0 8px 24px rgba(0,0,0,.28);animation:pop .16s ease}
 .toast.bad{border-color:rgba(229,72,77,.6);color:#ff9a9d}
 @keyframes pop{from{opacity:0;transform:translateY(5px)}}
 
 ::-webkit-scrollbar{width:9px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#232a33;border-radius:6px;border:2px solid var(--panel)}
-::-webkit-scrollbar-thumb:hover{background:#323b47}
+::-webkit-scrollbar-thumb{background:var(--bar1);border-radius:6px;border:2px solid var(--panel)}
+::-webkit-scrollbar-thumb:hover{background:var(--bar2)}

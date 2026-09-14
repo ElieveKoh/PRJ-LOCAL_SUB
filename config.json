@@ -27,7 +27,7 @@
     }
   ],
   "room": {
-    "defaultDelayMs": 2000,
+    "defaultDelayMs": 0,
     "maxDelayMs": 10000,
     "bufferSize": 4
   },

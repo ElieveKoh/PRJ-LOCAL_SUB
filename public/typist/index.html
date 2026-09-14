@@ -14,8 +14,8 @@
     <img class="brandlogo" alt="KISWE">
     <span class="brand-sep"></span>
     <span class="wordmark" data-i18n="brand">prj-livesub</span>
-    <span class="onair" id="onAir"><i></i><b>OFF AIR</b></span>
-    <span class="langbadge" id="langBadge">
+    <span class="onair" id="onAir" data-i18n-title="tipOnAir"><i></i><b>OFF AIR</b></span>
+    <span class="langbadge" id="langBadge" data-i18n-title="tipLang">
       <em data-i18n="subLang">자막 언어</em>
       <b id="langName">—</b>
       <u id="langCode">—</u>
@@ -23,14 +23,14 @@
   </div>
 
   <div class="bar-grp telemetry">
-    <span class="tel" id="telDelay"><em data-i18n="delay">딜레이</em><b>—</b></span>
-    <span class="tel" id="telSync"><em data-i18n="sync">동기화</em><b>—</b></span>
-    <span class="tel" id="telBuffer"><em data-i18n="buffer">버퍼</em><b>—</b></span>
+    <span class="tel" id="telDelay" data-i18n-title="tipDelay"><em data-i18n="delay">딜레이</em><b>—</b></span>
+    <span class="tel" id="telSync" data-i18n-title="tipPing"><em data-i18n="sync">PING</em><b>—</b></span>
+    <span class="tel" id="telBuffer" data-i18n-title="tipBuffer"><em data-i18n="buffer">전송대기</em><b>—</b></span>
   </div>
 
   <div class="bar-grp right">
     <span class="peerlabel" data-i18n="connected">연결된 사람</span>
-    <div class="peers" id="peers"></div>
+    <div class="peers" id="peers" data-i18n-title="tipPeers"></div>
     <div class="uilang" id="uiLang" role="group" aria-label="UI language">
       <button data-ui="ko">한국어</button><button data-ui="en">EN</button>
     </div>

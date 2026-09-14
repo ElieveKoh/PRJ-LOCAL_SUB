@@ -42,7 +42,8 @@
     color:var(--mut);border:1px solid var(--line2);border-radius:3px;padding:.12rem .36rem}
 
   .health{display:flex;align-items:center;gap:.9rem}
-  .hx{display:flex;align-items:baseline;gap:.38rem;font-family:var(--mono);font-size:10.5px;white-space:nowrap}
+  .hx{display:flex;align-items:baseline;gap:.38rem;font-family:var(--mono);font-size:10.5px;
+    white-space:nowrap;cursor:help}
   .hx em{font-style:normal;color:var(--mut);letter-spacing:.11em;text-transform:uppercase;font-size:9.5px}
   .hx b{font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--mut);flex:0 0 auto;position:relative;top:-1px}
@@ -58,7 +59,7 @@
   /* ---------- summary ---------- */
   .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.6rem}
   .tile{
-    position:relative;overflow:hidden;padding:.85rem 1rem .9rem;border-radius:8px;
+    cursor:help;position:relative;overflow:hidden;padding:.85rem 1rem .9rem;border-radius:8px;
     background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);
   }
   .tile::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tone,var(--line2))}
@@ -101,15 +102,15 @@
   }
   .cname{font-size:13.5px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .cstate{display:flex;align-items:center;gap:.42rem;font-family:var(--mono);font-size:10px;
-    letter-spacing:.09em;color:var(--mut)}
+    letter-spacing:.09em;color:var(--mut);cursor:help}
   .cstate.live{color:var(--live)}
   .cstate.ready{color:var(--ok)}
   .cstate.standby{color:#9a6a1c}
-  .ccount{font-family:var(--mono);font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .ccount{font-family:var(--mono);font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums;cursor:help}
   .ccount b{color:var(--fg2);font-weight:600}
 
   /* activity strip - one tick per poll, newest at the right */
-  .spark{display:flex;align-items:flex-end;gap:1px;height:18px}
+  .spark{display:flex;align-items:flex-end;gap:1px;height:18px;cursor:help}
   .spark i{flex:1 1 auto;border-radius:1px;background:#e7ebf2;height:4px}
   .spark i.s1{height:9px;background:#c3ccda}
   .spark i.s2{height:18px;background:var(--live)}
@@ -135,7 +136,7 @@
   /* ---------- session ---------- */
   .info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;
     border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow)}
-  .kv{padding:.72rem .9rem;border-right:1px solid var(--line)}
+  .kv{padding:.72rem .9rem;border-right:1px solid var(--line);cursor:help}
   .kv:last-child{border-right:0}
   .kv em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--mut);margin-bottom:.3rem}
@@ -195,18 +196,18 @@
   </div>
   <div class="sysbar-r">
     <div class="health">
-      <span class="hx"><i class="dot" id="dot"></i><em>server</em><b id="hServer">확인 중</b></span>
-      <span class="hx"><em>latency</em><b id="hLatency">—</b></span>
-      <span class="hx"><em>uptime</em><b id="hUptime">—</b></span>
+      <span class="hx" title="이 브라우저가 서버에 닿는지. 3초마다 확인합니다."><i class="dot" id="dot"></i><em>server</em><b id="hServer">확인 중</b></span>
+      <span class="hx" title="이 화면과 서버 사이 왕복 시간. 실제로 방금 측정한 값입니다."><em>latency</em><b id="hLatency">—</b></span>
+      <span class="hx" title="서버가 켜져 있던 시간. 재시작하면 0으로 돌아갑니다."><em>uptime</em><b id="hUptime">—</b></span>
     </div>
   </div>
 </div>
 
 <main>
   <div class="tiles">
-    <div class="tile" id="tOnair"><em>on air</em><b>0</b><span class="sub">송출 중인 채널</span></div>
-    <div class="tile" id="tTypists"><em>typists</em><b>0</b><span class="sub">접속한 속기사</span></div>
-    <div class="tile" id="tOutputs"><em>outputs</em><b>0</b><span class="sub">송출 화면</span></div>
+    <div class="tile" id="tOnair" title="지금 자막이 실제로 떠 있는 채널 수. 송출 화면이 그렇게 보고한 것만 셉니다."><em>on air</em><b>0</b><span class="sub">송출 중인 채널</span></div>
+    <div class="tile" id="tTypists" title="모든 채널을 합쳐 입력 화면에 접속해 있는 사람 수."><em>typists</em><b>0</b><span class="sub">접속한 속기사</span></div>
+    <div class="tile" id="tOutputs" title="스위처에 물린 송출 화면 수. 0이면 자막이 어디에도 나가지 않습니다."><em>outputs</em><b>0</b><span class="sub">송출 화면</span></div>
   </div>
 
   <div class="sec">
@@ -256,6 +257,7 @@
   let status = null;
   const hist = {};                  // code -> [0 idle, 1 staffed, 2 on air]
 
+  const STATE_TIP = 'IDLE 아무도 없음 · STANDBY 한쪽만 접속 · READY 속기사와 송출 화면 모두 접속 · ON AIR 자막이 떠 있음';
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const tone = (code) => 'var(--c-' + (['ko', 'en', 'ja', 'zh'].indexOf(code) >= 0 ? code : 'xx') + ')';
 
@@ -330,7 +332,7 @@
 
   function sparkHtml(code) {
     const h = hist[code] || [];
-    let out = '<span class="spark">';
+    let out = '<span class="spark" title="최근 2분의 활동. 칸 하나가 3초이고 오른쪽이 현재입니다. 붉은 칸은 그때 자막이 떠 있었다는 뜻입니다.">';
     for (let i = 0; i < TICKS; i++) {
       const v = h[h.length - TICKS + i];
       out += '<i class="' + (v === 2 ? 's2' : v === 1 ? 's1' : '') + '"></i>';
@@ -376,8 +378,8 @@
         + '<span class="stripe" style="--tone:' + (st.label === 'IDLE' ? 'transparent' : t) + '"></span>'
         + '<span class="cbadge">' + esc(l.code.toUpperCase()) + '</span>'
         + '<span class="cname">' + esc(l.name) + '</span>'
-        + '<span class="cstate ' + st.cls + '"><i class="dot ' + st.dot + '"></i>' + st.label + '</span>'
-        + '<span class="ccount">속기 <b>' + c.typists + '</b> · 송출 <b>' + c.outputs + '</b></span>'
+        + '<span class="cstate ' + st.cls + '" title="' + STATE_TIP + '"><i class="dot ' + st.dot + '"></i>' + st.label + '</span>'
+        + '<span class="ccount" title="이 채널에 접속한 속기사 수 · 송출 화면 수.">속기 <b>' + c.typists + '</b> · 송출 <b>' + c.outputs + '</b></span>'
         + sparkHtml(l.code)
         + '<span class="cact">'
         +   '<a class="abtn pri" target="_blank" rel="noopener" href="' + lk.typist + '">타이피스트</a>'
@@ -443,13 +445,17 @@
     if (!cfg) return;
     const room = cfg.room || {};
     const rows = [
-      ['default delay', ((room.defaultDelayMs || 0) / 1000).toFixed(1) + ' s'],
-      ['max delay', ((room.maxDelayMs || 0) / 1000).toFixed(1) + ' s'],
-      ['buffer', (room.bufferSize || 0) + ' lines'],
-      ['password', cfg.authRequired ? 'ON' : 'OFF'],
+      ['default delay', ((room.defaultDelayMs || 0) / 1000).toFixed(1) + ' s',
+        '방에 처음 들어왔을 때의 전송 딜레이. 속기사가 자기 화면에서 바꿀 수 있고, 바꾸면 방 전체에 적용됩니다.'],
+      ['max delay', ((room.maxDelayMs || 0) / 1000).toFixed(1) + ' s',
+        '속기사가 올릴 수 있는 딜레이의 상한.'],
+      ['buffer', (room.bufferSize || 0) + ' lines',
+        '서버가 기억하는 최근 자막 줄 수. 송출 화면이 새로 접속하면 이만큼을 되받아 복구합니다.'],
+      ['password', cfg.authRequired ? 'ON' : 'OFF',
+        '켜져 있으면 모든 화면이 비밀번호를 요구합니다. 현장 공용 와이파이에서는 켜두는 편이 좋습니다.'],
     ];
     $('info').innerHTML = rows
-      .map(([k, v]) => '<div class="kv"><em>' + k + '</em><b>' + esc(v) + '</b></div>')
+      .map(([k, v, tip]) => '<div class="kv" title="' + esc(tip) + '"><em>' + k + '</em><b>' + esc(v) + '</b></div>')
       .join('');
   }
 

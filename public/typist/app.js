@@ -48,8 +48,9 @@
 
   function renderTheme() {
     document.documentElement.dataset.theme = theme;
+    // the button shows the mode it switches TO, so the face is the destination
     el.themeBtn.textContent = T(theme === 'dark' ? 'themeLight' : 'themeDark');
-    el.themeBtn.title = T(theme === 'dark' ? 'themeLight' : 'themeDark');
+    el.themeBtn.title = T(theme === 'dark' ? 'themeLightTip' : 'themeDarkTip');
   }
   el.themeBtn.addEventListener('click', () => {
     theme = theme === 'dark' ? 'light' : 'dark';
@@ -606,7 +607,15 @@
     renderDraft();
   }, true);
 
-  el.hkAdd.addEventListener('click', () => { draft.push({ combo: '', label: '', text: '' }); renderDraft(); });
+  el.hkAdd.addEventListener('click', () => {
+    draft.push({ combo: '', label: '', text: '' });
+    renderDraft();
+    // the list scrolls now, so a row added past the fold would appear nowhere - bring it into
+    // view and put the cursor in it, or the button reads as doing nothing
+    el.hkRows.scrollTop = el.hkRows.scrollHeight;
+    const last = el.hkRows.querySelector('.hkrow:last-child input');
+    if (last) last.focus();
+  });
   el.hkSave.addEventListener('click', () => {
     saveHotkeys(draft.filter((h) => h.combo && h.text));
     closeHotkeyModal();
