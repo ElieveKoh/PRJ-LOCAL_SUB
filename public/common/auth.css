@@ -14,13 +14,15 @@
   background:#0e1217;border:1px solid #2a313b;border-radius:6px;color:#e7ebf0;
   padding:.6rem .7rem;font-size:1rem;font-family:inherit;outline:none;
 }
-.sub-gate-box input[type=password]:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.16)}
+.sub-gate-box input[type=password]:focus{border-color:#3a5d86;box-shadow:none}
 .sub-gate-remember{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#8b95a3;cursor:pointer}
-.sub-gate-remember input{accent-color:#3b82f6}
+.sub-gate-remember input{accent-color:#3a5d86}
+/* the gate is the first screen of an operations console, so it is toned like one -
+   a flat accent rather than a saturated call-to-action */
 .sub-gate-box button{
-  background:#3b82f6;border:1px solid #3b82f6;color:#fff;border-radius:6px;
+  background:#1a2334;border:1px solid #2f3d55;color:#dde4ef;border-radius:5px;
   padding:.55rem;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer;margin-top:.2rem;
 }
-.sub-gate-box button:hover{filter:brightness(1.08)}
+.sub-gate-box button:hover{background:#222d40;border-color:#3a5d86}
 .sub-gate-box.busy button{opacity:.6;pointer-events:none}
-.sub-gate-err{min-height:1.1em;font-size:.75rem;color:#ef4444}
+.sub-gate-err{min-height:1.1em;font-size:.75rem;color:#c4565a}

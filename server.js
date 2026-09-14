@@ -51,6 +51,22 @@ app.get('/api/config', (req, res) => {
   res.json(safe);
 });
 
+// The dashboard lists channels, and a channel nobody is on looks the same as one that is
+// staffed unless the server says so. This is the room census: who is connected where.
+app.get('/api/status', (req, res) => {
+  const langs = {};
+  (config.languages || []).forEach((l) => { langs[l.code] = { typists: 0, outputs: 0, onair: false }; });
+  Object.keys(roomState).forEach((lang) => {
+    const st = roomState[lang];
+    const row = langs[lang] || (langs[lang] = { typists: 0, outputs: 0, onair: false });
+    st.users.forEach((u) => { if (u.role === 'broadcast') row.outputs += 1; else row.typists += 1; });
+    const bc = canonicalBroadcast(st);
+    const v = bc ? st.onair.get(bc.id) : null;
+    row.onair = !!(v && v.texts && v.texts.length);
+  });
+  res.json({ langs });
+});
+
 app.use(express.json({ limit: '4kb' }));
 
 app.post('/api/login', (req, res) => {

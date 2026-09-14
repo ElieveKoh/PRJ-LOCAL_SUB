@@ -3,95 +3,347 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>실시간 자막 시스템 대시보드</title>
+<title>prj-livesub — 오퍼레이션 콘솔</title>
 <link rel="stylesheet" href="/common/auth.css">
 <style>
-  :root { --bd:#e3e6ea; --mut:#6b7280; }
-  * { box-sizing: border-box; }
-  body { font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         margin:0; padding:2rem 1rem; background:#f0f2f5; color:#111; }
-  .container { max-width:860px; margin:0 auto; background:#fff; padding:2rem;
-               border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-  /* light card, so the logotype is used as-is - no inversion */
-  .brandlogo { display:block; height:15px; width:auto; margin:0 auto 1.1rem; opacity:.45; }
-  h1 { text-align:center; margin:0 0 .5rem; font-size:1.5rem; }
-  .net { text-align:center; color:var(--mut); font-size:.85rem; margin-bottom:2rem; line-height:1.7; }
-  .net code { background:#f3f4f6; padding:.15rem .4rem; border-radius:4px; font-size:.85rem; user-select:all; }
-  .lang-section { margin-bottom:1.5rem; }
-  .lang-title { font-size:1.05rem; font-weight:700; margin-bottom:.75rem; padding-bottom:.5rem;
-                border-bottom:2px solid #eee; display:flex; align-items:center; gap:.5rem; }
-  .badge { font-size:.7rem; font-weight:600; color:var(--mut); background:#f3f4f6;
-           border:1px solid var(--bd); border-radius:999px; padding:.1rem .5rem; }
-  .btn-group { display:flex; gap:.75rem; flex-wrap:wrap; }
-  .btn { flex:1 1 220px; padding:.9rem; text-align:center; text-decoration:none;
-         border-radius:6px; font-weight:700; color:#fff; transition:opacity .15s; }
-  .btn:hover { opacity:.88; }
-  .btn-broadcast { background:#10b981; }
-  .btn-typist { background:#3b82f6; }
-  .name-row { display:flex; align-items:center; gap:.6rem; justify-content:center;
-              margin-bottom:1.75rem; font-size:.9rem; color:var(--mut); }
-  .name-row input { padding:.45rem .7rem; border:1px solid var(--bd); border-radius:6px;
-                    font-size:.9rem; width:180px; font-family:inherit; }
+  :root{
+    --bg:#0b0f19; --panel:#0f1522; --panel2:#131a29; --sunk:#090d15;
+    --line:#1b2434; --line2:#243046;
+    --fg:#dde4ef; --fg2:#93a0b4; --mut:#5f6b7e;
+    --ok:#3fae72; --warn:#b9873a; --bad:#c4565a; --live:#d2564f;
+    --mono:ui-monospace,SFMono-Regular,Menlo,"Roboto Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:13px;-webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;
+  }
+
+  /* ---------- system bar ---------- */
+  .sysbar{
+    flex:0 0 auto;display:flex;align-items:center;gap:1.1rem;height:46px;padding:0 .9rem;
+    background:linear-gradient(180deg,#101724,#0d131f);border-bottom:1px solid var(--line);
+  }
+  .sysbar-l,.sysbar-r{display:flex;align-items:center;gap:.75rem;min-width:0}
+  .sysbar-r{margin-left:auto}
+  .brandlogo{height:11px;width:auto;opacity:.5;filter:brightness(0) invert(1)}
+  .vr{width:1px;height:14px;background:var(--line2);flex:0 0 auto}
+  .wordmark{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--fg2)}
+
+  .health{display:flex;align-items:center;gap:.9rem}
+  .hx{display:flex;align-items:baseline;gap:.38rem;font-family:var(--mono);font-size:10.5px;white-space:nowrap}
+  .hx em{font-style:normal;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;font-size:9.5px}
+  .hx b{font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--mut);flex:0 0 auto;position:relative;top:-1px}
+  .dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(63,174,114,.14)}
+  .dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(196,86,90,.14)}
+
+  .idfield{display:flex;align-items:center;gap:.45rem}
+  .idfield label{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+  .idfield input{
+    width:150px;padding:.32rem .5rem;background:var(--sunk);color:var(--fg);
+    border:1px solid var(--line2);border-radius:4px;font-family:inherit;font-size:12px;outline:none;
+  }
+  .idfield input:focus{border-color:#3a5d86}
+  .idfield input::placeholder{color:var(--mut)}
+
+  /* ---------- body ---------- */
+  main{flex:1 1 auto;width:100%;max-width:960px;margin:0 auto;padding:1.5rem 1rem 3rem}
+
+  .hostrow{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.6rem}
+  .hostlab{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .hostbox{
+    display:flex;align-items:stretch;border:1px solid var(--line2);border-radius:5px;overflow:hidden;
+    background:var(--sunk);
+  }
+  .hostbox code{
+    font-family:var(--mono);font-size:12.5px;color:var(--fg);padding:.42rem .7rem;user-select:all;letter-spacing:.01em;
+  }
+  .iconbtn{
+    display:flex;align-items:center;justify-content:center;width:32px;flex:0 0 auto;cursor:pointer;
+    background:var(--panel2);border:0;border-left:1px solid var(--line2);color:var(--fg2);padding:0;
+  }
+  .iconbtn:hover{background:#1a2334;color:var(--fg)}
+  .iconbtn:active{background:#161e2d}
+  .iconbtn svg{width:13px;height:13px;display:block}
+  .hostnote{font-size:11.5px;color:var(--mut);line-height:1.6}
+
+  /* ---------- channel matrix ---------- */
+  .sec{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .55rem;padding:0 .1rem}
+  .sec h2{margin:0;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--fg2)}
+  .sec span{font-family:var(--mono);font-size:10px;color:var(--mut);margin-left:auto}
+
+  .matrix{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
+  .mrow{
+    /* every track is fixed: each row is its own grid, so an auto track would size to that
+       row's own content and the header would stop lining up with the rows beneath it */
+    display:grid;grid-template-columns:52px minmax(0,1fr) 96px 128px 206px;
+    align-items:center;gap:.9rem;padding:.62rem .8rem;border-bottom:1px solid var(--line);
+  }
+  .mrow:last-child{border-bottom:0}
+  .mhead{background:var(--sunk);padding-top:.42rem;padding-bottom:.42rem}
+  .mhead span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .mrow:not(.mhead):hover{background:var(--panel2)}
+
+  .cbadge{
+    font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--fg2);
+    border:1px solid var(--line2);border-radius:3px;padding:.16rem 0;text-align:center;background:var(--sunk);
+  }
+  .cname{font-size:13px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cstate{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--mut)}
+  .cstate.live{color:#e0847f}
+  .cstate.ready{color:var(--fg2)}
+  .cstate .dot.live{background:var(--live);box-shadow:0 0 0 3px rgba(210,86,79,.15)}
+  .ccount{font-family:var(--mono);font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .ccount b{color:var(--fg2);font-weight:600}
+  .cact{display:flex;align-items:center;gap:.4rem;justify-content:flex-end}
+
+  .abtn{
+    display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;cursor:pointer;
+    padding:.4rem .7rem;border-radius:4px;font-size:12px;font-weight:600;white-space:nowrap;
+    background:var(--panel2);border:1px solid var(--line2);color:var(--fg2);
+  }
+  .abtn:hover{background:#1a2334;border-color:#2f3d55;color:var(--fg)}
+  .abtn:active{background:#151d2b}
+  .abtn .k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--mut)}
+
+  .empty{padding:1.1rem .9rem;color:var(--mut);font-size:12px}
+
+  footer{max-width:960px;margin:0 auto;padding:1rem;color:var(--mut);font-size:11.5px;line-height:1.7}
+  footer code{font-family:var(--mono);background:var(--sunk);border:1px solid var(--line);
+    border-radius:3px;padding:.06rem .3rem;color:var(--fg2)}
+
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;
+    background:var(--panel2);border:1px solid var(--line2);border-radius:5px;
+    padding:.45rem .8rem;font-family:var(--mono);font-size:11px;color:var(--fg);
+    opacity:0;pointer-events:none;transition:opacity .15s;
+  }
+  .toast.on{opacity:1}
+
+  @media (max-width:720px){
+    .mrow{grid-template-columns:48px minmax(0,1fr);row-gap:.5rem}
+    .mhead{display:none}
+    .cstate,.ccount{grid-column:2}
+    .cact{grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap}
+    .health{display:none}
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <img class="brandlogo" alt="KISWE">
-  <h1>🎙️ 실시간 자막 대시보드</h1>
-  <div class="net" id="net">서버 정보 확인 중…</div>
-  <div class="name-row">
-    <label for="who">내 이름(속기사 식별용)</label>
-    <input id="who" placeholder="예: 속기1" autocomplete="off">
+
+<div class="sysbar">
+  <div class="sysbar-l">
+    <img class="brandlogo" alt="KISWE">
+    <span class="vr"></span>
+    <span class="wordmark">prj-livesub</span>
+    <span class="vr"></span>
+    <div class="health">
+      <span class="hx"><i class="dot" id="dot"></i><em>server</em><b id="hServer">확인 중</b></span>
+      <span class="hx"><em>latency</em><b id="hLatency">—</b></span>
+      <span class="hx"><em>net</em><b id="hNet">—</b></span>
+    </div>
   </div>
-  <div id="channels">채널 정보를 불러오는 중입니다…</div>
+  <div class="sysbar-r">
+    <div class="idfield">
+      <label for="who">Operator ID</label>
+      <input id="who" placeholder="속기1" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
 </div>
+
+<main>
+  <div class="hostrow">
+    <span class="hostlab">host</span>
+    <span class="hostbox">
+      <code id="host">—</code>
+      <button class="iconbtn" id="copyHost" type="button" title="주소 복사" aria-label="주소 복사">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="5.6" y="5.6" width="8" height="8" rx="1.4"/>
+          <path d="M10.4 3.4V2.9A1.5 1.5 0 0 0 8.9 1.4H3.4A1.5 1.5 0 0 0 1.9 2.9v5.5a1.5 1.5 0 0 0 1.5 1.5h.5"/>
+        </svg>
+      </button>
+    </span>
+    <span class="hostnote">이 주소를 다른 PC 브라우저에 그대로 입력하면 같은 화면이 열립니다.</span>
+  </div>
+
+  <div class="sec">
+    <h2>채널</h2>
+    <span id="chCount"></span>
+  </div>
+  <div class="matrix" id="matrix">
+    <div class="empty">채널 정보를 불러오는 중…</div>
+  </div>
+</main>
+
+<footer>
+  송출 화면은 스위처의 Web source에 URL을 그대로 넣는 것이 기본 경로입니다.
+  위 <code>송출</code> 옆 링크 아이콘은 투명 배경(<code>bgMode=transparent</code>) URL을 복사합니다.
+  자막 모양을 바꾸려면 송출 화면 우상단 설정에서 조정한 뒤 그 화면의 <code>URL 복사</code>를 쓰세요.
+</footer>
+
+<div class="toast" id="toast"></div>
 
 <script src="/common/brand.js"></script>
 <script src="/common/auth.js"></script>
 <script>
-const NAME_KEY = 'sub.typist.name';
-const who = document.getElementById('who');
-who.value = localStorage.getItem(NAME_KEY) || '';
-who.addEventListener('input', () => {
-  localStorage.setItem(NAME_KEY, who.value.trim());
-  render(window.__cfg);
-});
+(function () {
+  const NAME_KEY = 'sub.typist.name';
+  const $ = (id) => document.getElementById(id);
+  const who = $('who');
 
-function render(cfg) {
-  if (!cfg) return;
-  const name = (localStorage.getItem(NAME_KEY) || '').trim();
-  const q = (lang, extra) => `?lang=${encodeURIComponent(lang)}` + (extra || '');
-  const nameQ = name ? `&name=${encodeURIComponent(name)}` : '';
-  const pw = SubAuth.token();
-  const pwQ = pw ? `&pw=${encodeURIComponent(pw)}` : '';
-  const box = document.getElementById('channels');
-  box.innerHTML = '';
-  cfg.languages.forEach(lang => {
-    const s = document.createElement('div');
-    s.className = 'lang-section';
-    s.innerHTML = `
-      <div class="lang-title">${lang.name} 채널 <span class="badge">${lang.code}</span></div>
-      <div class="btn-group">
-        <a class="btn btn-typist" target="_blank" href="/typist${q(lang.code, nameQ + pwQ)}">⌨️ 타이피스트 (입력)</a>
-        <a class="btn btn-broadcast" target="_blank" href="/broadcast${q(lang.code, pwQ)}">📺 송출용 화면 (크로마키)</a>
-      </div>`;
-    box.appendChild(s);
-  });
-}
+  let cfg = null;
+  let status = null;
 
-SubAuth.ensure({ title: '실시간 자막 시스템', note: '계속하려면 비밀번호를 입력하세요.' })
-  .then(() => fetch('/api/config'))
-  .then(r => r.json())
-  .then(cfg => {
-    window.__cfg = cfg;
-    document.getElementById('net').innerHTML =
-      `이 페이지 주소를 다른 PC에 그대로 입력하세요 → <code>${location.origin}</code><br>` +
-      `송출 화면을 연 뒤 우상단 <b>⚙</b> → 설정을 맞추고 <b>URL 복사</b> → 송출 소프트웨어에 붙여넣으세요.`;
-    render(cfg);
-  })
-  .catch(() => {
-    document.getElementById('channels').textContent = '설정을 불러오지 못했습니다. 서버 콘솔을 확인하세요.';
+  who.value = localStorage.getItem(NAME_KEY) || '';
+  who.addEventListener('input', () => {
+    localStorage.setItem(NAME_KEY, who.value.trim());
+    renderMatrix();
   });
+
+  // ---------- links ----------
+  function links(code) {
+    const name = (localStorage.getItem(NAME_KEY) || '').trim();
+    const pw = SubAuth.token();
+    const q = (extra) => '?lang=' + encodeURIComponent(code)
+      + (pw ? '&pw=' + encodeURIComponent(pw) : '')
+      + (extra || '');
+    return {
+      typist: '/typist' + q(name ? '&name=' + encodeURIComponent(name) : ''),
+      output: '/broadcast' + q(''),
+      // the switcher takes the page as a web source; transparent is the production path
+      source: location.origin + '/broadcast' + q('&bgMode=transparent'),
+    };
+  }
+
+  // ---------- clipboard ----------
+  let toastT = null;
+  function toast(msg) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('on');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => el.classList.remove('on'), 1600);
+  }
+  function copy(text, msg) {
+    const done = () => toast(msg);
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, () => fallback(text, done));
+    } else {
+      fallback(text, done);
+    }
+  }
+  // plain http on a LAN is not a secure context, so the async clipboard is often unavailable
+  function fallback(text, done) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('복사 실패 — 수동으로 선택하세요'); }
+    ta.remove();
+  }
+
+  $('copyHost').addEventListener('click', () => copy(location.origin, '주소를 복사했습니다'));
+
+  // ---------- health ----------
+  function setHealth(online, ms) {
+    $('dot').className = 'dot ' + (online ? 'ok' : 'bad');
+    $('hServer').textContent = online ? '정상' : '끊김';
+    $('hLatency').textContent = online && ms != null ? ms + ' ms' : '—';
+  }
+
+  function netLabel() {
+    const h = location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1' || h === '::1') return 'LOCAL';
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(h) || h.endsWith('.local')) return 'LAN';
+    return h.toUpperCase();
+  }
+
+  // ---------- matrix ----------
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function stateOf(code) {
+    const s = status && status.langs && status.langs[code];
+    if (!s) return { cls: '', dot: '', label: 'IDLE' };
+    if (s.onair) return { cls: 'live', dot: 'live', label: 'ON AIR' };
+    if (s.outputs > 0 && s.typists > 0) return { cls: 'ready', dot: 'ok', label: 'READY' };
+    if (s.outputs > 0 || s.typists > 0) return { cls: 'ready', dot: '', label: 'STANDBY' };
+    return { cls: '', dot: '', label: 'IDLE' };
+  }
+
+  function renderMatrix() {
+    if (!cfg) return;
+    const box = $('matrix');
+    const langs = cfg.languages || [];
+    $('chCount').textContent = langs.length + ' CH';
+
+    let html = '<div class="mrow mhead">'
+      + '<span>ch</span><span>언어</span><span>상태</span><span>접속</span><span></span></div>';
+
+    langs.forEach((l) => {
+      const st = stateOf(l.code);
+      const c = (status && status.langs && status.langs[l.code]) || { typists: 0, outputs: 0 };
+      const lk = links(l.code);
+      html += '<div class="mrow">'
+        + '<span class="cbadge">' + esc(l.code.toUpperCase()) + '</span>'
+        + '<span class="cname">' + esc(l.name) + '</span>'
+        + '<span class="cstate ' + st.cls + '"><i class="dot ' + st.dot + '"></i>' + st.label + '</span>'
+        + '<span class="ccount">속기 <b>' + c.typists + '</b> · 송출 <b>' + c.outputs + '</b></span>'
+        + '<span class="cact">'
+        +   '<a class="abtn" target="_blank" rel="noopener" href="' + lk.typist + '">타이피스트</a>'
+        +   '<a class="abtn" target="_blank" rel="noopener" href="' + lk.output + '">송출</a>'
+        +   '<button class="iconbtn" type="button" data-src="' + esc(lk.source) + '" '
+        +     'style="width:30px;height:28px;border:1px solid var(--line2);border-radius:4px" '
+        +     'title="스위처 Web source용 투명 배경 URL 복사" aria-label="송출 URL 복사">'
+        +     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">'
+        +     '<path d="M6.6 9.4a2.6 2.6 0 0 0 3.9.3l2-2a2.6 2.6 0 0 0-3.7-3.7l-1.1 1.1"/>'
+        +     '<path d="M9.4 6.6a2.6 2.6 0 0 0-3.9-.3l-2 2a2.6 2.6 0 0 0 3.7 3.7l1.1-1.1"/>'
+        +     '</svg></button>'
+        + '</span>'
+        + '</div>';
+    });
+
+    box.innerHTML = html;
+    box.querySelectorAll('button[data-src]').forEach((b) => {
+      b.addEventListener('click', () => copy(b.dataset.src, '송출 URL을 복사했습니다'));
+    });
+  }
+
+  // ---------- poll ----------
+  async function poll() {
+    const t0 = performance.now();
+    try {
+      const r = await fetch('/api/status', { cache: 'no-store' });
+      const ms = Math.round(performance.now() - t0);
+      status = await r.json();
+      setHealth(true, ms);
+    } catch (e) {
+      setHealth(false, null);
+    }
+    renderMatrix();
+  }
+
+  SubAuth.ensure({ title: 'prj-livesub', note: '계속하려면 비밀번호를 입력하세요.' })
+    .then(() => fetch('/api/config'))
+    .then((r) => r.json())
+    .then((c) => {
+      cfg = c;
+      $('host').textContent = location.origin;
+      $('hNet').textContent = netLabel();
+      renderMatrix();
+      poll();
+      setInterval(poll, 3000);
+    })
+    .catch(() => {
+      $('matrix').innerHTML = '<div class="empty">설정을 불러오지 못했습니다. 서버 콘솔을 확인하세요.</div>';
+      setHealth(false, null);
+    });
+})();
 </script>
 </body>
 </html>
