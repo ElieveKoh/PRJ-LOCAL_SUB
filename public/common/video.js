@@ -132,6 +132,7 @@
       btn.className = 'video-sound';
       function sync() {
         btn.textContent = v.muted ? t('vSoundOn') : t('vMute');
+        btn.dataset.tip = v.muted ? t('vSoundOn') : t('vMute');
         btn.classList.toggle('on', !v.muted);
       }
       btn.addEventListener('click', () => {

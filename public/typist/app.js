@@ -50,7 +50,7 @@
     document.documentElement.dataset.theme = theme;
     // the button shows the mode it switches TO, so the face is the destination
     el.themeBtn.textContent = T(theme === 'dark' ? 'themeLight' : 'themeDark');
-    el.themeBtn.title = T(theme === 'dark' ? 'themeLightTip' : 'themeDarkTip');
+    el.themeBtn.dataset.tip = T(theme === 'dark' ? 'themeLightTip' : 'themeDarkTip');
   }
   el.themeBtn.addEventListener('click', () => {
     theme = theme === 'dark' ? 'light' : 'dark';
@@ -65,7 +65,7 @@
 
   function renderLayout() {
     el.grid.dataset.layout = layout;
-    el.swapBtn.title = T('swapTip');
+    el.swapBtn.dataset.tip = T('swapTip');
   }
   el.swapBtn.addEventListener('click', () => {
     layout = layout === 'video' ? 'text' : 'video';
@@ -89,8 +89,8 @@
   function applyStatic() {
     document.querySelectorAll('[data-i18n]').forEach((n) => { n.textContent = T(n.dataset.i18n); });
     document.querySelectorAll('[data-i18n-html]').forEach((n) => { n.innerHTML = T(n.dataset.i18nHtml); });
-    document.querySelectorAll('[data-i18n-title]').forEach((n) => { n.title = T(n.dataset.i18nTitle); });
-    el.proto.title = T('vResyncTip');
+    document.querySelectorAll('[data-i18n-title]').forEach((n) => { n.dataset.tip = T(n.dataset.i18nTitle); });
+    el.proto.dataset.tip = T('vResyncTip');
     SubVideo.relabel();
     renderLayout();
     renderTheme();
