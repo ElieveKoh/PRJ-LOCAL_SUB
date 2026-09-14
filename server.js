@@ -3,6 +3,7 @@ const http = require('http');
 const os = require('os');
 const dns = require('dns');
 const path = require('path');
+const fs = require('fs');
 const { Server } = require('socket.io');
 const baseConfig = require('./config.json');
 
@@ -23,6 +24,33 @@ function loadConfig() {
   return merged;
 }
 const config = loadConfig();
+
+// The video address is set from the operator console during a show, so it cannot live in
+// config.json (edited by hand, read once at boot). It goes in its own gitignored file rather
+// than config.local.json, which holds the room password - a runtime rewrite must never be
+// able to lose that.
+const RUNTIME_PATH = path.join(__dirname, 'config.runtime.json');
+function loadRuntime() {
+  try { return JSON.parse(fs.readFileSync(RUNTIME_PATH, 'utf8')) || {}; } catch (e) { return {}; }
+}
+(function applyRuntime() {
+  const rt = loadRuntime();
+  if (rt.video && typeof rt.video.url === 'string') {
+    config.video = Object.assign({}, config.video, { url: rt.video.url });
+  }
+})();
+
+// Whatever the typist page is handed goes into a <video> or an iframe, so the scheme is
+// checked here rather than trusted. A relative path is allowed: it is how the built-in
+// test stream and any same-server source are addressed.
+function cleanVideoUrl(raw) {
+  const v = String(raw == null ? '' : raw).trim();
+  if (!v) return '';
+  if (v.startsWith('/') && !v.startsWith('//')) return v;
+  if (/^(https?|wss?):\/\/[^\s]+$/i.test(v)) return v;
+  return null;
+}
+
 const STARTED_AT = Date.now();
 const AUTH = config.auth || { enabled: false, password: '' };
 const authOn = () => Boolean(AUTH.enabled && AUTH.password);
@@ -69,6 +97,24 @@ app.get('/api/status', (req, res) => {
 });
 
 app.use(express.json({ limit: '4kb' }));
+
+// Setting the source is a write, so it takes the room password whenever one is set, and it
+// tells every open typist screen at once - nobody should have to be told to reload mid-show.
+app.post('/api/video', (req, res) => {
+  const body = req.body || {};
+  if (!authOk(body.pw)) return res.status(401).json({ ok: false, error: 'auth' });
+  const url = cleanVideoUrl(body.url);
+  if (url === null) return res.status(400).json({ ok: false, error: 'scheme' });
+  config.video = Object.assign({}, config.video, { url });
+  try {
+    fs.writeFileSync(RUNTIME_PATH, JSON.stringify({ video: { url } }, null, 2) + '\n');
+  } catch (e) {
+    console.log('  영상 주소를 파일에 저장하지 못했습니다 — 이번 실행에만 적용됩니다:', e.message);
+  }
+  console.log(`  영상 주소 변경 → ${url || '(없음)'}`);
+  io.emit('video_changed', { url });
+  return res.json({ ok: true, url });
+});
 
 app.post('/api/login', (req, res) => {
   const ok = authOk(req.body && req.body.pw);

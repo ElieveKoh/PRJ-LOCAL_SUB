@@ -81,6 +81,9 @@
     t: T,
   });
 
+  // the operator can change the feed from the console; follow it without a reload
+  conn.on('video_changed', (d) => SubVideo.setSource((d && d.url) || ''));
+
   // ---------- i18n ----------
   function applyStatic() {
     document.querySelectorAll('[data-i18n]').forEach((n) => { n.textContent = T(n.dataset.i18n); });

@@ -133,13 +133,31 @@
   .empty{padding:1.1rem .9rem;color:var(--mut);font-size:12px}
 
   /* ---------- session ---------- */
-  .info{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;
+  .info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;
     border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow)}
   .kv{padding:.72rem .9rem;border-right:1px solid var(--line)}
   .kv:last-child{border-right:0}
   .kv em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--mut);margin-bottom:.3rem}
   .kv b{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
+
+  /* the one thing on this page that writes, so it gets its own block rather than sitting
+     inside the read-only settings grid */
+  .vsrc{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+    border:1px solid var(--line);border-radius:8px;background:var(--panel);
+    box-shadow:var(--shadow);padding:.8rem .9rem;margin-bottom:.55rem}
+  .vsrc input{
+    flex:1 1 320px;min-width:0;padding:.46rem .6rem;border:1px solid var(--line2);border-radius:5px;
+    background:var(--panel);color:var(--fg);font-family:var(--mono);font-size:12.5px;outline:none;
+  }
+  .vsrc input:focus{border-color:var(--steel);box-shadow:0 0 0 3px rgba(47,111,181,.12)}
+  .vsrc input::placeholder{color:var(--mut);font-family:var(--mono)}
+  .vmsg{font-size:11.5px;color:var(--mut)}
+  .vmsg.ok{color:var(--ok)}
+  .vmsg.bad{color:var(--bad)}
+  .vhelp{margin:0 0 1.7rem;padding:0 .15rem;font-size:11.5px;color:var(--mut);line-height:1.7}
+  .vhelp code{font-family:var(--mono);background:var(--sunk);border:1px solid var(--line);
+    border-radius:3px;padding:.06rem .3rem;color:var(--fg2)}
 
   footer{max-width:1060px;margin:0 auto;padding:0 1.1rem 2rem;color:var(--mut);font-size:11.5px;line-height:1.7}
   footer code{font-family:var(--mono);background:var(--sunk);border:1px solid var(--line);
@@ -199,6 +217,22 @@
   <div class="matrix" id="matrix">
     <div class="empty">채널 정보를 불러오는 중…</div>
   </div>
+
+  <div class="sec">
+    <h2>영상 소스</h2>
+    <span class="hint">속기사 화면에 띄울 프로그램 피드</span>
+  </div>
+  <div class="vsrc">
+    <input id="vurl" placeholder="http://미디어서버:8080/live/stream.m3u8" autocomplete="off" spellcheck="false">
+    <button class="abtn pri" id="vsave" type="button">저장</button>
+    <button class="abtn" id="vclear" type="button">지우기</button>
+    <span class="vmsg" id="vmsg"></span>
+  </div>
+  <p class="vhelp">
+    주소 형태로 플레이어가 정해집니다 — <code>.m3u8</code> HLS · <code>ws://</code> SLDP · 그 외 iframe.
+    저장하면 <strong>열려 있는 속기사 화면에 새로고침 없이 바로 반영</strong>됩니다.
+    한 자리만 다른 곳을 보게 하려면 그 화면 주소에 <code>?video=…</code>를 붙이세요 — 그쪽이 우선합니다.
+  </p>
 
   <div class="sec"><h2>설정</h2></div>
   <div class="info" id="info"></div>
@@ -365,6 +399,46 @@
     });
   }
 
+  // ---------- video source ----------
+  let vmsgT = null;
+  function vmsg(text, cls) {
+    const el = $('vmsg');
+    el.textContent = text;
+    el.className = 'vmsg' + (cls ? ' ' + cls : '');
+    clearTimeout(vmsgT);
+    if (text) vmsgT = setTimeout(() => { el.textContent = ''; el.className = 'vmsg'; }, 4000);
+  }
+
+  async function saveVideo(url) {
+    const btns = [$('vsave'), $('vclear')];
+    btns.forEach((b) => { b.disabled = true; });
+    try {
+      const r = await fetch('/api/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, pw: SubAuth.token() }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (r.status === 401) return vmsg('비밀번호가 필요합니다. 새로고침 후 다시 로그인하세요.', 'bad');
+      if (r.status === 400) return vmsg('http(s), ws(s) 또는 /로 시작하는 주소만 됩니다.', 'bad');
+      if (!r.ok || !d.ok) return vmsg('저장하지 못했습니다. 서버 콘솔을 확인하세요.', 'bad');
+      cfg.video = Object.assign({}, cfg.video, { url: d.url });
+      $('vurl').value = d.url;
+      renderInfo();
+      vmsg(d.url ? '저장했습니다. 속기사 화면에 반영됩니다.' : '영상 소스를 지웠습니다.', 'ok');
+    } catch (e) {
+      vmsg('서버에 연결하지 못했습니다.', 'bad');
+    } finally {
+      btns.forEach((b) => { b.disabled = false; });
+    }
+  }
+
+  $('vsave').addEventListener('click', () => saveVideo($('vurl').value.trim()));
+  $('vclear').addEventListener('click', () => { $('vurl').value = ''; saveVideo(''); });
+  $('vurl').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); saveVideo($('vurl').value.trim()); }
+  });
+
   function renderInfo() {
     if (!cfg) return;
     const room = cfg.room || {};
@@ -373,7 +447,6 @@
       ['max delay', ((room.maxDelayMs || 0) / 1000).toFixed(1) + ' s'],
       ['buffer', (room.bufferSize || 0) + ' lines'],
       ['password', cfg.authRequired ? 'ON' : 'OFF'],
-      ['video source', (cfg.video && cfg.video.url) ? '연결됨' : '미설정'],
     ];
     $('info').innerHTML = rows
       .map(([k, v]) => '<div class="kv"><em>' + k + '</em><b>' + esc(v) + '</b></div>')
@@ -406,6 +479,7 @@
     .then((r) => r.json())
     .then((c) => {
       cfg = c;
+      $('vurl').value = (c.video && c.video.url) || '';
       renderTiles();
       renderMatrix();
       renderInfo();

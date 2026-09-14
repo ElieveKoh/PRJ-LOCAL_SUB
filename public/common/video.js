@@ -18,6 +18,7 @@
   // Controls created here are labelled once, at build time. The UI language can change
   // afterwards, so the page needs a way to ask for those labels again.
   let relabel = () => {};
+  let setSource = () => {};
 
   const HLS_LIB = '/vendor/hls/hls.min.js';
   const SLDP_LIB = '/vendor/sldp/sldp.js';
@@ -216,6 +217,24 @@
     }
 
     const override = (opts.override || '').trim();
+
+    // The operator can re-point the room mid-show. A seat that was pointed somewhere else by
+    // hand keeps its own address - that override exists precisely to differ from the room.
+    setSource = (url) => {
+      if (override) return;
+      const next = (url || '').trim();
+      if (next === sourceUrl) return;
+      sourceUrl = next;
+      if (sourceUrl) {
+        start();
+      } else {
+        teardown();
+        ph.hidden = false;
+        ph.querySelector('.ph-s').innerHTML = t('noVideoSub');
+        setStatus(t('vSignalLost'), '');
+      }
+    };
+
     if (override) {
       sourceUrl = override;
       start();
@@ -230,5 +249,5 @@
       .catch(() => {});
   }
 
-  global.SubVideo = { mount, relabel: () => relabel() };
+  global.SubVideo = { mount, relabel: () => relabel(), setSource: (u) => setSource(u) };
 })(window);
