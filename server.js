@@ -23,6 +23,7 @@ function loadConfig() {
   return merged;
 }
 const config = loadConfig();
+const STARTED_AT = Date.now();
 const AUTH = config.auth || { enabled: false, password: '' };
 const authOn = () => Boolean(AUTH.enabled && AUTH.password);
 const authOk = (pw) => !authOn() || String(pw || '') === String(AUTH.password);
@@ -64,7 +65,7 @@ app.get('/api/status', (req, res) => {
     const v = bc ? st.onair.get(bc.id) : null;
     row.onair = !!(v && v.texts && v.texts.length);
   });
-  res.json({ langs });
+  res.json({ langs, uptimeMs: Date.now() - STARTED_AT });
 });
 
 app.use(express.json({ limit: '4kb' }));

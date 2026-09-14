@@ -7,10 +7,16 @@
 <link rel="stylesheet" href="/common/auth.css">
 <style>
   :root{
-    --bg:#0b0f19; --panel:#0f1522; --panel2:#131a29; --sunk:#090d15;
-    --line:#1b2434; --line2:#243046;
-    --fg:#dde4ef; --fg2:#93a0b4; --mut:#5f6b7e;
-    --ok:#3fae72; --warn:#b9873a; --bad:#c4565a; --live:#d2564f;
+    --bg:#0a0e17; --panel:#0f1522; --panel2:#141c2c; --sunk:#080c14;
+    --line:#1b2434; --line2:#26324a;
+    --fg:#e2e8f2; --fg2:#93a0b4; --mut:#5d6879;
+
+    --ok:#3fae72; --warn:#c2903f; --bad:#c4565a; --live:#e05a52;
+    --steel:#4f8cc9;
+
+    /* one hue per channel, desaturated enough to sit on a control-room surface */
+    --c-ko:#4f8cc9; --c-en:#4fa88c; --c-ja:#c2904f; --c-zh:#9a7bb8; --c-xx:#7a8699;
+
     --mono:ui-monospace,SFMono-Regular,Menlo,"Roboto Mono",monospace;
   }
   *{box-sizing:border-box}
@@ -20,100 +26,141 @@
     font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     font-size:13px;-webkit-font-smoothing:antialiased;
     display:flex;flex-direction:column;
+    background-image:radial-gradient(1100px 420px at 18% -12%, rgba(79,140,201,.07), transparent 70%);
   }
 
   /* ---------- system bar ---------- */
   .sysbar{
-    flex:0 0 auto;display:flex;align-items:center;gap:1.1rem;height:46px;padding:0 .9rem;
-    background:linear-gradient(180deg,#101724,#0d131f);border-bottom:1px solid var(--line);
+    flex:0 0 auto;display:flex;align-items:center;gap:1rem;height:48px;padding:0 1rem;
+    background:linear-gradient(180deg,#111a2a,#0c1220);border-bottom:1px solid var(--line);
   }
-  .sysbar-l,.sysbar-r{display:flex;align-items:center;gap:.75rem;min-width:0}
+  .sysbar-l,.sysbar-r{display:flex;align-items:center;gap:.8rem;min-width:0}
   .sysbar-r{margin-left:auto}
-  .brandlogo{height:11px;width:auto;opacity:.5;filter:brightness(0) invert(1)}
-  .vr{width:1px;height:14px;background:var(--line2);flex:0 0 auto}
-  .wordmark{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--fg2)}
+  .brandlogo{height:11px;width:auto;opacity:.55;filter:brightness(0) invert(1)}
+  .vr{width:1px;height:15px;background:var(--line2);flex:0 0 auto}
+  .wordmark{font-family:var(--mono);font-size:11px;letter-spacing:.11em;color:var(--fg2)}
 
-  .health{display:flex;align-items:center;gap:.9rem}
+  .health{display:flex;align-items:center;gap:.85rem}
   .hx{display:flex;align-items:baseline;gap:.38rem;font-family:var(--mono);font-size:10.5px;white-space:nowrap}
-  .hx em{font-style:normal;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;font-size:9.5px}
+  .hx em{font-style:normal;color:var(--mut);letter-spacing:.11em;text-transform:uppercase;font-size:9.5px}
   .hx b{font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--mut);flex:0 0 auto;position:relative;top:-1px}
-  .dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(63,174,114,.14)}
-  .dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(196,86,90,.14)}
+  .dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(63,174,114,.15)}
+  .dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(196,86,90,.15)}
+  .dot.live{background:var(--live);box-shadow:0 0 0 3px rgba(224,90,82,.16);animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.4}}
+  @media (prefers-reduced-motion:reduce){.dot.live{animation:none}}
 
   .idfield{display:flex;align-items:center;gap:.45rem}
-  .idfield label{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+  .idfield label{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)}
   .idfield input{
-    width:150px;padding:.32rem .5rem;background:var(--sunk);color:var(--fg);
+    width:150px;padding:.34rem .55rem;background:var(--sunk);color:var(--fg);
     border:1px solid var(--line2);border-radius:4px;font-family:inherit;font-size:12px;outline:none;
   }
-  .idfield input:focus{border-color:#3a5d86}
+  .idfield input:focus{border-color:var(--steel);box-shadow:0 0 0 3px rgba(79,140,201,.12)}
   .idfield input::placeholder{color:var(--mut)}
 
   /* ---------- body ---------- */
-  main{flex:1 1 auto;width:100%;max-width:960px;margin:0 auto;padding:1.5rem 1rem 3rem}
+  main{flex:1 1 auto;width:100%;max-width:1120px;margin:0 auto;padding:1.4rem 1rem 2.5rem}
 
-  .hostrow{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.6rem}
-  .hostlab{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
-  .hostbox{
-    display:flex;align-items:stretch;border:1px solid var(--line2);border-radius:5px;overflow:hidden;
-    background:var(--sunk);
+  /* ---------- summary tiles ---------- */
+  .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.5rem}
+  .tile{
+    position:relative;overflow:hidden;padding:.8rem .9rem .85rem;border-radius:7px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
   }
-  .hostbox code{
-    font-family:var(--mono);font-size:12.5px;color:var(--fg);padding:.42rem .7rem;user-select:all;letter-spacing:.01em;
+  .tile::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--tone,var(--line2))}
+  .tile em{
+    display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--mut);margin-bottom:.35rem;
   }
+  .tile b{
+    display:block;font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;
+    color:var(--fg);font-variant-numeric:tabular-nums;
+  }
+  .tile .sub{margin-top:.35rem;font-size:11px;color:var(--mut)}
+  .tile.hot{--tone:var(--live)}
+  .tile.hot b{color:#f0938c}
+  .tile.on{--tone:var(--ok)}
+
+  /* ---------- host ---------- */
+  .hostrow{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+  .hostlab{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)}
+  .hostbox{display:flex;align-items:stretch;border:1px solid var(--line2);border-radius:5px;
+    overflow:hidden;background:var(--sunk)}
+  .hostbox code{font-family:var(--mono);font-size:12.5px;color:var(--fg);padding:.44rem .7rem;user-select:all}
   .iconbtn{
     display:flex;align-items:center;justify-content:center;width:32px;flex:0 0 auto;cursor:pointer;
     background:var(--panel2);border:0;border-left:1px solid var(--line2);color:var(--fg2);padding:0;
   }
-  .iconbtn:hover{background:#1a2334;color:var(--fg)}
-  .iconbtn:active{background:#161e2d}
+  .iconbtn:hover{background:#1c2740;color:var(--fg)}
+  .iconbtn:active{background:#161f33}
   .iconbtn svg{width:13px;height:13px;display:block}
-  .hostnote{font-size:11.5px;color:var(--mut);line-height:1.6}
+  .hostnote{font-size:11.5px;color:var(--mut)}
+
+  /* ---------- section head ---------- */
+  .sec{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .6rem;padding:0 .1rem}
+  .sec h2{margin:0;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--fg2)}
+  .sec .hint{font-size:11px;color:var(--mut)}
+  .sec .right{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--mut)}
 
   /* ---------- channel matrix ---------- */
-  .sec{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .55rem;padding:0 .1rem}
-  .sec h2{margin:0;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--fg2)}
-  .sec span{font-family:var(--mono);font-size:10px;color:var(--mut);margin-left:auto}
-
-  .matrix{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
+  .matrix{border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel);margin-bottom:1.6rem}
   .mrow{
     /* every track is fixed: each row is its own grid, so an auto track would size to that
        row's own content and the header would stop lining up with the rows beneath it */
-    display:grid;grid-template-columns:52px minmax(0,1fr) 96px 128px 206px;
-    align-items:center;gap:.9rem;padding:.62rem .8rem;border-bottom:1px solid var(--line);
+    display:grid;grid-template-columns:3px 52px minmax(0,1fr) 100px 136px 118px 206px;
+    align-items:center;gap:.85rem;padding:.7rem .85rem .7rem 0;border-bottom:1px solid var(--line);
   }
   .mrow:last-child{border-bottom:0}
-  .mhead{background:var(--sunk);padding-top:.42rem;padding-bottom:.42rem}
-  .mhead span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .mhead{background:var(--sunk);padding-top:.45rem;padding-bottom:.45rem}
+  .mhead span{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)}
   .mrow:not(.mhead):hover{background:var(--panel2)}
+  .stripe{align-self:stretch;background:var(--tone,transparent)}
 
   .cbadge{
-    font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--fg2);
-    border:1px solid var(--line2);border-radius:3px;padding:.16rem 0;text-align:center;background:var(--sunk);
+    font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;
+    color:var(--tone,var(--fg2));border:1px solid var(--tone,var(--line2));
+    border-radius:3px;padding:.18rem 0;text-align:center;
+    background:color-mix(in srgb, var(--tone,#26324a) 14%, transparent);
   }
-  .cname{font-size:13px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .cstate{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--mut)}
-  .cstate.live{color:#e0847f}
-  .cstate.ready{color:var(--fg2)}
-  .cstate .dot.live{background:var(--live);box-shadow:0 0 0 3px rgba(210,86,79,.15)}
+  .cname{font-size:13.5px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cstate{display:flex;align-items:center;gap:.42rem;font-family:var(--mono);font-size:10px;
+    letter-spacing:.09em;color:var(--mut)}
+  .cstate.live{color:#f0938c}
+  .cstate.ready{color:#7fcda6}
+  .cstate.standby{color:#d6ab6b}
   .ccount{font-family:var(--mono);font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
   .ccount b{color:var(--fg2);font-weight:600}
-  .cact{display:flex;align-items:center;gap:.4rem;justify-content:flex-end}
 
+  /* activity strip - one tick per poll, newest at the right */
+  .spark{display:flex;align-items:flex-end;gap:1px;height:18px}
+  .spark i{flex:1 1 auto;border-radius:1px;background:#141d2d;height:4px}
+  .spark i.s1{height:9px;background:#2c3d55}
+  .spark i.s2{height:18px;background:var(--live);box-shadow:0 0 6px rgba(224,90,82,.35)}
+
+  .cact{display:flex;align-items:center;gap:.4rem;justify-content:flex-end}
   .abtn{
     display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;cursor:pointer;
-    padding:.4rem .7rem;border-radius:4px;font-size:12px;font-weight:600;white-space:nowrap;
+    padding:.42rem .72rem;border-radius:4px;font-size:12px;font-weight:600;white-space:nowrap;
     background:var(--panel2);border:1px solid var(--line2);color:var(--fg2);
   }
-  .abtn:hover{background:#1a2334;border-color:#2f3d55;color:var(--fg)}
-  .abtn:active{background:#151d2b}
-  .abtn .k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--mut)}
+  .abtn:hover{background:#1c2740;border-color:#33456a;color:var(--fg)}
+  .abtn:active{background:#161f33}
+  .abtn.pri:hover{border-color:var(--steel);color:#bcd6f0}
 
   .empty{padding:1.1rem .9rem;color:var(--mut);font-size:12px}
 
-  footer{max-width:960px;margin:0 auto;padding:1rem;color:var(--mut);font-size:11.5px;line-height:1.7}
+  /* ---------- session panel ---------- */
+  .info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;
+    border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel)}
+  .kv{padding:.7rem .85rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .kv em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--mut);margin-bottom:.3rem}
+  .kv b{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
+
+  footer{max-width:1120px;margin:0 auto;padding:0 1rem 2rem;color:var(--mut);font-size:11.5px;line-height:1.7}
   footer code{font-family:var(--mono);background:var(--sunk);border:1px solid var(--line);
     border-radius:3px;padding:.06rem .3rem;color:var(--fg2)}
 
@@ -125,11 +172,13 @@
   }
   .toast.on{opacity:1}
 
-  @media (max-width:720px){
-    .mrow{grid-template-columns:48px minmax(0,1fr);row-gap:.5rem}
+  @media (max-width:860px){
+    .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .info{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .mrow{grid-template-columns:3px 48px minmax(0,1fr);row-gap:.5rem;padding-right:.7rem}
     .mhead{display:none}
-    .cstate,.ccount{grid-column:2}
-    .cact{grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap}
+    .cstate,.ccount,.spark{grid-column:3}
+    .cact{grid-column:2/-1;justify-content:flex-start;flex-wrap:wrap}
     .health{display:none}
   }
 </style>
@@ -145,6 +194,7 @@
     <div class="health">
       <span class="hx"><i class="dot" id="dot"></i><em>server</em><b id="hServer">확인 중</b></span>
       <span class="hx"><em>latency</em><b id="hLatency">—</b></span>
+      <span class="hx"><em>uptime</em><b id="hUptime">—</b></span>
       <span class="hx"><em>net</em><b id="hNet">—</b></span>
     </div>
   </div>
@@ -157,6 +207,13 @@
 </div>
 
 <main>
+  <div class="tiles">
+    <div class="tile" id="tOnair"><em>on air</em><b>0</b><span class="sub">송출 중인 채널</span></div>
+    <div class="tile" id="tCh"><em>channels</em><b>—</b><span class="sub">운영 채널</span></div>
+    <div class="tile" id="tTypists"><em>typists</em><b>0</b><span class="sub">접속한 속기사</span></div>
+    <div class="tile" id="tOutputs"><em>outputs</em><b>0</b><span class="sub">송출 화면</span></div>
+  </div>
+
   <div class="hostrow">
     <span class="hostlab">host</span>
     <span class="hostbox">
@@ -173,16 +230,20 @@
 
   <div class="sec">
     <h2>채널</h2>
-    <span id="chCount"></span>
+    <span class="hint">활동 막대는 최근 2분, 오른쪽이 현재</span>
+    <span class="right" id="chCount"></span>
   </div>
   <div class="matrix" id="matrix">
     <div class="empty">채널 정보를 불러오는 중…</div>
   </div>
+
+  <div class="sec"><h2>세션</h2></div>
+  <div class="info" id="info"></div>
 </main>
 
 <footer>
   송출 화면은 스위처의 Web source에 URL을 그대로 넣는 것이 기본 경로입니다.
-  위 <code>송출</code> 옆 링크 아이콘은 투명 배경(<code>bgMode=transparent</code>) URL을 복사합니다.
+  각 행의 링크 아이콘은 투명 배경(<code>bgMode=transparent</code>) URL을 복사합니다.
   자막 모양을 바꾸려면 송출 화면 우상단 설정에서 조정한 뒤 그 화면의 <code>URL 복사</code>를 쓰세요.
 </footer>
 
@@ -193,11 +254,13 @@
 <script>
 (function () {
   const NAME_KEY = 'sub.typist.name';
+  const TICKS = 40;                 // 40 polls x 3s = the last two minutes
   const $ = (id) => document.getElementById(id);
   const who = $('who');
 
   let cfg = null;
   let status = null;
+  const hist = {};                  // code -> [0 idle, 1 staffed, 2 on air]
 
   who.value = localStorage.getItem(NAME_KEY) || '';
   who.addEventListener('input', () => {
@@ -205,13 +268,14 @@
     renderMatrix();
   });
 
-  // ---------- links ----------
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const tone = (code) => 'var(--c-' + (['ko', 'en', 'ja', 'zh'].indexOf(code) >= 0 ? code : 'xx') + ')';
+
   function links(code) {
     const name = (localStorage.getItem(NAME_KEY) || '').trim();
     const pw = SubAuth.token();
     const q = (extra) => '?lang=' + encodeURIComponent(code)
-      + (pw ? '&pw=' + encodeURIComponent(pw) : '')
-      + (extra || '');
+      + (pw ? '&pw=' + encodeURIComponent(pw) : '') + (extra || '');
     return {
       typist: '/typist' + q(name ? '&name=' + encodeURIComponent(name) : ''),
       output: '/broadcast' + q(''),
@@ -247,7 +311,6 @@
     try { document.execCommand('copy'); done(); } catch (e) { toast('복사 실패 — 수동으로 선택하세요'); }
     ta.remove();
   }
-
   $('copyHost').addEventListener('click', () => copy(location.origin, '주소를 복사했습니다'));
 
   // ---------- health ----------
@@ -256,7 +319,11 @@
     $('hServer').textContent = online ? '정상' : '끊김';
     $('hLatency').textContent = online && ms != null ? ms + ' ms' : '—';
   }
-
+  function hhmmss(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const p = (n) => String(n).padStart(2, '0');
+    return p(Math.floor(s / 3600)) + ':' + p(Math.floor(s / 60) % 60) + ':' + p(s % 60);
+  }
   function netLabel() {
     const h = location.hostname;
     if (h === 'localhost' || h === '127.0.0.1' || h === '::1') return 'LOCAL';
@@ -264,38 +331,77 @@
     return h.toUpperCase();
   }
 
-  // ---------- matrix ----------
-  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-  function stateOf(code) {
-    const s = status && status.langs && status.langs[code];
+  // ---------- state ----------
+  function levelOf(s) {
+    if (!s) return 0;
+    if (s.onair) return 2;
+    if (s.typists > 0 || s.outputs > 0) return 1;
+    return 0;
+  }
+  function stateOf(s) {
     if (!s) return { cls: '', dot: '', label: 'IDLE' };
     if (s.onair) return { cls: 'live', dot: 'live', label: 'ON AIR' };
     if (s.outputs > 0 && s.typists > 0) return { cls: 'ready', dot: 'ok', label: 'READY' };
-    if (s.outputs > 0 || s.typists > 0) return { cls: 'ready', dot: '', label: 'STANDBY' };
+    if (s.outputs > 0 || s.typists > 0) return { cls: 'standby', dot: '', label: 'STANDBY' };
     return { cls: '', dot: '', label: 'IDLE' };
   }
 
+  function sparkHtml(code) {
+    const h = hist[code] || [];
+    let out = '<span class="spark">';
+    for (let i = 0; i < TICKS; i++) {
+      const v = h[h.length - TICKS + i];
+      out += '<i class="' + (v === 2 ? 's2' : v === 1 ? 's1' : '') + '"></i>';
+    }
+    return out + '</span>';
+  }
+
+  // ---------- tiles ----------
+  function renderTiles() {
+    const langs = (cfg && cfg.languages) || [];
+    let onair = 0, typists = 0, outputs = 0;
+    langs.forEach((l) => {
+      const s = status && status.langs && status.langs[l.code];
+      if (!s) return;
+      if (s.onair) onair += 1;
+      typists += s.typists;
+      outputs += s.outputs;
+    });
+    const set = (id, val, cls) => {
+      const el = $(id);
+      el.querySelector('b').textContent = val;
+      el.className = 'tile' + (cls ? ' ' + cls : '');
+    };
+    set('tOnair', onair, onair ? 'hot' : '');
+    set('tCh', langs.length, '');
+    set('tTypists', typists, typists ? 'on' : '');
+    set('tOutputs', outputs, outputs ? 'on' : '');
+  }
+
+  // ---------- matrix ----------
   function renderMatrix() {
     if (!cfg) return;
-    const box = $('matrix');
     const langs = cfg.languages || [];
     $('chCount').textContent = langs.length + ' CH';
 
-    let html = '<div class="mrow mhead">'
-      + '<span>ch</span><span>언어</span><span>상태</span><span>접속</span><span></span></div>';
+    let html = '<div class="mrow mhead"><span></span><span>ch</span><span>언어</span>'
+      + '<span>상태</span><span>접속</span><span>활동</span><span></span></div>';
 
     langs.forEach((l) => {
-      const st = stateOf(l.code);
-      const c = (status && status.langs && status.langs[l.code]) || { typists: 0, outputs: 0 };
+      const s = (status && status.langs && status.langs[l.code]) || null;
+      const st = stateOf(s);
+      const c = s || { typists: 0, outputs: 0 };
       const lk = links(l.code);
-      html += '<div class="mrow">'
+      const t = tone(l.code);
+      html += '<div class="mrow" style="--tone:' + t + '">'
+        + '<span class="stripe" style="--tone:' + (st.label === 'IDLE' ? 'transparent' : t) + '"></span>'
         + '<span class="cbadge">' + esc(l.code.toUpperCase()) + '</span>'
         + '<span class="cname">' + esc(l.name) + '</span>'
         + '<span class="cstate ' + st.cls + '"><i class="dot ' + st.dot + '"></i>' + st.label + '</span>'
         + '<span class="ccount">속기 <b>' + c.typists + '</b> · 송출 <b>' + c.outputs + '</b></span>'
+        + sparkHtml(l.code)
         + '<span class="cact">'
-        +   '<a class="abtn" target="_blank" rel="noopener" href="' + lk.typist + '">타이피스트</a>'
+        +   '<a class="abtn pri" target="_blank" rel="noopener" href="' + lk.typist + '">타이피스트</a>'
         +   '<a class="abtn" target="_blank" rel="noopener" href="' + lk.output + '">송출</a>'
         +   '<button class="iconbtn" type="button" data-src="' + esc(lk.source) + '" '
         +     'style="width:30px;height:28px;border:1px solid var(--line2);border-radius:4px" '
@@ -308,10 +414,30 @@
         + '</div>';
     });
 
+    const box = $('matrix');
     box.innerHTML = html;
     box.querySelectorAll('button[data-src]').forEach((b) => {
       b.addEventListener('click', () => copy(b.dataset.src, '송출 URL을 복사했습니다'));
     });
+  }
+
+  // ---------- session panel ----------
+  function renderInfo() {
+    if (!cfg) return;
+    const room = cfg.room || {};
+    const rows = [
+      ['host', location.host],
+      ['channels', (cfg.languages || []).map((l) => l.code.toUpperCase()).join(' · ')],
+      ['default delay', ((room.defaultDelayMs || 0) / 1000).toFixed(1) + ' s'],
+      ['max delay', ((room.maxDelayMs || 0) / 1000).toFixed(1) + ' s'],
+      ['buffer', (room.bufferSize || 0) + ' lines'],
+      ['password', cfg.authRequired ? 'ON' : 'OFF'],
+      ['video source', (cfg.video && cfg.video.url) ? '연결됨' : '미설정'],
+      ['max lines', ((cfg.defaultSettings || {}).maxLines || 0) + ' lines'],
+    ];
+    $('info').innerHTML = rows
+      .map(([k, v]) => '<div class="kv"><em>' + k + '</em><b>' + esc(v) + '</b></div>')
+      .join('');
   }
 
   // ---------- poll ----------
@@ -322,9 +448,16 @@
       const ms = Math.round(performance.now() - t0);
       status = await r.json();
       setHealth(true, ms);
+      $('hUptime').textContent = hhmmss(status.uptimeMs || 0);
+      (cfg.languages || []).forEach((l) => {
+        const arr = hist[l.code] || (hist[l.code] = []);
+        arr.push(levelOf(status.langs && status.langs[l.code]));
+        if (arr.length > TICKS) arr.shift();
+      });
     } catch (e) {
       setHealth(false, null);
     }
+    renderTiles();
     renderMatrix();
   }
 
@@ -335,7 +468,9 @@
       cfg = c;
       $('host').textContent = location.origin;
       $('hNet').textContent = netLabel();
+      renderTiles();
       renderMatrix();
+      renderInfo();
       poll();
       setInterval(poll, 3000);
     })
