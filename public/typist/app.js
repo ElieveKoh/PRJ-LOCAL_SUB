@@ -7,6 +7,7 @@
     peers: $('peers'), uiLang: $('uiLang'),
     video: $('video'), videoPh: $('videoPh'), overlay: $('overlay'),
     grid: $('grid'), swapBtn: $('swapBtn'), videoNote: $('videoNote'),
+    themeBtn: $('themeBtn'),
     timecode: $('timecode'), proto: $('proto'),
     monitor: $('monitor'), monitorBody: $('monitorBody'), monitorWho: $('monitorWho'),
     history: $('history'), histCount: $('histCount'),
@@ -39,6 +40,24 @@
   // Layout is a seat preference, not a room setting - it stays in this browser, the same way
   // hotkeys do. 'video' keeps the picture in the wide column; 'text' gives that column to the
   // history and the other typist's line, which is what matters once a show is actually running.
+  // Theme is a seat preference like the layout: a control room wants dark, a lit office
+  // wants light, and the same person may work in both during one event.
+  const THEME_KEY = 'sub.theme';
+  let theme = 'dark';
+  try { theme = localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark'; } catch (e) {}
+
+  function renderTheme() {
+    document.documentElement.dataset.theme = theme;
+    el.themeBtn.textContent = T(theme === 'dark' ? 'themeLight' : 'themeDark');
+    el.themeBtn.title = T(theme === 'dark' ? 'themeLight' : 'themeDark');
+  }
+  el.themeBtn.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    renderTheme();
+  });
+  renderTheme();
+
   const LAYOUT_KEY = 'sub.layout';
   let layout = 'video';
   try { layout = localStorage.getItem(LAYOUT_KEY) === 'text' ? 'text' : 'video'; } catch (e) {}
@@ -70,6 +89,7 @@
     el.proto.title = T('vResyncTip');
     SubVideo.relabel();
     renderLayout();
+    renderTheme();
     el.input.placeholder = T('placeholder');
     el.langName.textContent = I18N.langName(conn.lang);
     el.langCode.textContent = conn.lang.toUpperCase();

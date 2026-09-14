@@ -1,10 +1,32 @@
+/* Dark is the default: this screen sits next to a switcher in a control room. Light exists
+   because the same console gets opened in a lit office, and a dark page there is the one
+   nobody can read. Everything that is not over the video is themed through these tokens;
+   the video panel and the subtitle overlay stay dark in both, because they sit on a picture. */
 :root{
   --bg:#0b0e12; --panel:#12161c; --panel2:#171c23; --sunk:#0e1217;
   --bd:#232a33; --bd2:#2e3742;
   --fg:#e8edf3; --fg2:#aab4c0; --mut:#6f7b89;
   --acc:#4b8cf7; --ok:#2fbf6d; --warn:#e6a233; --bad:#e5484d;
+  --barTop:#141920; --barBot:#10141a;
+  --accFg:#9cc2ff; --accFg2:#8fb8ff; --accFg3:#cfe0ff;
+  --badFg:#ff7b7f; --badFg2:#ff8a8e; --okFg:#8fe3b4;
+  --mineFg:#9cc2ff; --theirsFg:#c3a8f0; --theirsBd:#8a6ae0;
+  --langEm:#8fb8ff; --langB:#dce9ff;
+  --modalBack:rgba(3,5,8,.72); --modalShadow:0 24px 60px rgba(0,0,0,.6);
   --mono:ui-monospace,SFMono-Regular,Menlo,"Roboto Mono",monospace;
   --r:7px;
+}
+:root[data-theme="light"]{
+  --bg:#eef1f6; --panel:#ffffff; --panel2:#f5f7fb; --sunk:#e9edf3;
+  --bd:#d7dde7; --bd2:#c2cbd9;
+  --fg:#141a23; --fg2:#49566a; --mut:#7b8799;
+  --acc:#2f6fd0; --ok:#1f9c5d; --warn:#a3701f; --bad:#c5333a;
+  --barTop:#ffffff; --barBot:#f1f4f9;
+  --accFg:#2a5f9e; --accFg2:#33639b; --accFg3:#1f4b80;
+  --badFg:#b93b3f; --badFg2:#a8343a; --okFg:#1a7a4a;
+  --mineFg:#2a5f9e; --theirsFg:#5f3f9c; --theirsBd:#8a6ae0;
+  --langEm:#33639b; --langB:#12314f;
+  --modalBack:rgba(20,26,35,.42); --modalShadow:0 18px 44px rgba(20,26,35,.18);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -15,7 +37,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 
 /* ============ header ============ */
 .bar{flex:0 0 auto;display:flex;align-items:center;gap:1.25rem;height:44px;padding:0 .85rem;
-  background:linear-gradient(180deg,#141920,#10141a);border-bottom:1px solid var(--bd)}
+  background:linear-gradient(180deg,var(--barTop),var(--barBot));border-bottom:1px solid var(--bd)}
 .bar-grp{display:flex;align-items:center;gap:.5rem;min-width:0}
 .brand{flex:0 0 auto}
 .telemetry{flex:1 1 auto;justify-content:flex-start;gap:.4rem}
@@ -24,6 +46,9 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 /* company wordmark: a dark logotype on transparent, so it is inverted for this dark
    console and held back to label weight - it identifies the maker, it is not the title. */
 .brandlogo{height:11px;width:auto;opacity:.5;filter:brightness(0) invert(1)}
+/* the wordmark art is dark ink on transparent: inverted it reads on the dark console,
+   and inverting it on the light one would paint white on white */
+:root[data-theme="light"] .brandlogo{filter:none;opacity:.65}
 .brand-sep{width:1px;height:13px;background:var(--bd2);flex:0 0 auto}
 .wordmark{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--mut)}
 .onair{display:inline-flex;align-items:center;gap:.4rem;padding:.28rem .55rem;border-radius:var(--r);
@@ -32,14 +57,14 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .onair b{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--mut)}
 .onair.live{border-color:rgba(229,72,77,.5);background:rgba(229,72,77,.1)}
 .onair.live i{background:var(--bad);box-shadow:0 0 0 3px rgba(229,72,77,.18);animation:beat 1.6s ease-in-out infinite}
-.onair.live b{color:#ff7b7f}
+.onair.live b{color:var(--badFg)}
 @keyframes beat{50%{opacity:.45}}
 /* the channel language must be unmistakable - a typist must never send Korean into the EN room */
 .langbadge{display:inline-flex;align-items:center;gap:.45rem;padding:.26rem .6rem;border-radius:var(--r);
   border:1px solid rgba(75,140,247,.45);background:linear-gradient(180deg,rgba(75,140,247,.18),rgba(75,140,247,.07))}
-.langbadge em{font-style:normal;font-size:9.5px;letter-spacing:.08em;color:#8fb8ff;text-transform:uppercase}
-.langbadge b{font-size:13px;font-weight:800;color:#dce9ff;letter-spacing:.01em}
-.langbadge u{font-family:var(--mono);font-size:10px;text-decoration:none;color:#8fb8ff;
+.langbadge em{font-style:normal;font-size:9.5px;letter-spacing:.08em;color:var(--langEm);text-transform:uppercase}
+.langbadge b{font-size:13px;font-weight:800;color:var(--langB);letter-spacing:.01em}
+.langbadge u{font-family:var(--mono);font-size:10px;text-decoration:none;color:var(--langEm);
   border:1px solid rgba(75,140,247,.45);border-radius:3px;padding:.02rem .26rem}
 
 .right{gap:.55rem}
@@ -50,6 +75,9 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
   font-weight:700;padding:.3rem .5rem;cursor:pointer;transition:.12s}
 .uilang button:hover{color:var(--fg)}
 .uilang button.on{background:var(--acc);color:#fff}
+.themebtn{background:var(--sunk);border:1px solid var(--bd2);border-radius:var(--r);color:var(--fg2);
+  font-family:inherit;font-size:11px;font-weight:700;padding:.24rem .5rem;cursor:pointer;line-height:1.5}
+.themebtn:hover{border-color:var(--acc);color:var(--accFg)}
 
 .tel{display:inline-flex;align-items:baseline;gap:.4rem;padding:.28rem .6rem;border-radius:var(--r);
   border:1px solid var(--bd);background:var(--panel);white-space:nowrap}
@@ -105,7 +133,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
   color:var(--bd2);background:transparent;border:1px solid transparent;
   transition:color .12s,background .12s,border-color .12s,box-shadow .12s}
 .swapbtn:hover::before,.swapbtn:focus-visible::before{background:var(--acc);width:2px}
-.swapbtn:hover span,.swapbtn:focus-visible span{color:#cfe0ff;background:var(--panel2);
+.swapbtn:hover span,.swapbtn:focus-visible span{color:var(--accFg3);background:var(--panel2);
   border-color:var(--acc);box-shadow:0 0 0 3px rgba(75,140,247,.15)}
 .swapbtn:active span{background:var(--sunk)}
 .swapbtn:focus{outline:none}
@@ -141,7 +169,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
   padding:.34rem .62rem;border-radius:var(--r);border:1px solid var(--bd2);
   background:rgba(11,14,18,.88);color:var(--fg);font-family:inherit;font-size:11px;font-weight:700}
 .video-sound:hover{border-color:var(--acc);color:#cfe0ff}
-.video-sound.on{border-color:rgba(47,191,109,.5);color:#8fe3b4}
+.video-sound.on{border-color:rgba(47,191,109,.5);color:var(--okFg)}
 .video-sldp{position:absolute;inset:0}
 .ph-icon{font-size:1.6rem;opacity:.45}
 .ph-t{font-size:12px;font-weight:600;color:#4b5665}
@@ -190,19 +218,19 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 /* who sent it - the single most important distinction in a two-typist room */
 .who{display:inline-flex;align-items:center;gap:.25rem;font-size:9.5px;font-weight:800;letter-spacing:.05em;
   padding:.13rem .4rem;border-radius:4px;border:1px solid;white-space:nowrap}
-.who.mine{color:#9cc2ff;border-color:rgba(75,140,247,.5);background:rgba(75,140,247,.16)}
-.who.theirs{color:#c3a8f0;border-color:rgba(150,110,230,.45);background:rgba(150,110,230,.14)}
+.who.mine{color:var(--mineFg);border-color:rgba(75,140,247,.5);background:rgba(75,140,247,.16)}
+.who.theirs{color:var(--theirsFg);border-color:rgba(150,110,230,.45);background:rgba(150,110,230,.14)}
 .history li.mine{background:linear-gradient(90deg,rgba(75,140,247,.09),var(--panel) 55%);
   border-left-color:var(--acc)}
 .history li.other{background:linear-gradient(90deg,rgba(150,110,230,.08),var(--panel) 55%);
-  border-left-color:#8a6ae0}
+  border-left-color:var(--theirsBd)}
 .history li.other .htext{color:var(--fg2)}
 
 .st{display:inline-flex;align-items:center;gap:.3rem;font-size:9.5px;font-weight:700;letter-spacing:.05em;
   padding:.13rem .4rem;border-radius:4px;border:1px solid;white-space:nowrap}
 .st i{width:5px;height:5px;border-radius:50%;background:currentColor}
 .st.wait{color:var(--warn);border-color:rgba(230,162,51,.42);background:rgba(230,162,51,.1)}
-.st.live{color:#ff7b7f;border-color:rgba(229,72,77,.45);background:rgba(229,72,77,.12)}
+.st.live{color:var(--badFg);border-color:rgba(229,72,77,.45);background:rgba(229,72,77,.12)}
 .st.done{color:var(--mut);border-color:var(--bd2);background:var(--sunk)}
 .st.fail{color:var(--bad);border-color:rgba(229,72,77,.55);background:rgba(229,72,77,.16)}
 .hwho{font-size:10.5px;color:var(--mut);font-family:var(--mono)}
@@ -215,26 +243,26 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 
 .hbtn{background:var(--panel2);border:1px solid var(--bd2);color:var(--fg2);border-radius:5px;
   padding:.26rem .5rem;font-size:10.5px;font-family:inherit;cursor:pointer;white-space:nowrap;transition:.12s}
-.hbtn:hover{border-color:var(--bad);color:#ff8a8e;background:rgba(229,72,77,.12)}
-.hbtn.retry:hover{border-color:var(--acc);color:#8fb8ff;background:rgba(75,140,247,.12)}
+.hbtn:hover{border-color:var(--bad);color:var(--badFg2);background:rgba(229,72,77,.12)}
+.hbtn.retry:hover{border-color:var(--acc);color:var(--accFg2);background:rgba(75,140,247,.12)}
 .empty{color:var(--mut);font-size:11.5px;padding:1.1rem;text-align:center;border:0;background:none;
   margin:auto 0;display:block}
 
 /* ---- hotkey modal ---- */
 .modal[hidden]{display:none!important}
 .modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:1.5rem}
-.modal-back{position:absolute;inset:0;background:rgba(3,5,8,.72);backdrop-filter:blur(2px)}
+.modal-back{position:absolute;inset:0;background:var(--modalBack);backdrop-filter:blur(2px)}
 .modal-box{position:relative;width:min(760px,100%);max-height:86vh;overflow-y:auto;background:var(--panel);
   border:1px solid var(--bd2);border-radius:10px;padding:1rem 1.1rem 1.1rem;
-  box-shadow:0 24px 60px rgba(0,0,0,.6)}
+  box-shadow:var(--modalShadow)}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
 .modal-head b{font-size:14px;letter-spacing:.01em}
 .modal-x{background:none;border:0;color:var(--mut);font-size:14px;cursor:pointer;padding:.2rem .3rem}
 .modal-x:hover{color:var(--fg)}
 .hkhint{margin:0 0 .4rem;font-size:11px;color:var(--mut);line-height:1.65}
-.hksafe{margin:0 0 .9rem;font-size:10.5px;color:#8fb8ff;background:rgba(75,140,247,.1);
+.hksafe{margin:0 0 .9rem;font-size:10.5px;color:var(--accFg2);background:rgba(75,140,247,.1);
   border:1px solid rgba(75,140,247,.28);border-radius:5px;padding:.35rem .55rem;line-height:1.5}
-.keycap.bad{border-color:rgba(229,72,77,.55);color:#ff8a8e;background:rgba(229,72,77,.12)}
+.keycap.bad{border-color:rgba(229,72,77,.55);color:var(--badFg2);background:rgba(229,72,77,.12)}
 
 .hkhead,.hkrow{display:grid;grid-template-columns:10.5rem 8.5rem 1fr 2.4rem;gap:.4rem;align-items:center}
 .hkhead{padding:0 .1rem .35rem;font-size:9.5px;font-weight:700;letter-spacing:.08em;
@@ -247,7 +275,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .keycap{display:flex;align-items:center;justify-content:center;gap:.25rem;background:var(--sunk);
   border:1px solid var(--bd2);border-radius:5px;color:var(--fg);font-family:var(--mono);font-size:11px;
   padding:.4rem .3rem;cursor:pointer;transition:.12s;white-space:nowrap;overflow:hidden}
-.keycap:hover{border-color:var(--acc);color:#9cc2ff}
+.keycap:hover{border-color:var(--acc);color:var(--accFg)}
 .keycap.unset{color:var(--mut)}
 .keycap.listening{border-color:var(--warn);color:var(--warn);background:rgba(230,162,51,.12);
   animation:capblink 1s steps(1) infinite}
@@ -255,7 +283,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 
 .hkdel{background:transparent;border:1px solid var(--bd);border-radius:5px;color:var(--mut);
   font-family:inherit;font-size:11px;padding:.4rem 0;cursor:pointer;transition:.12s}
-.hkdel:hover{border-color:var(--bad);color:#ff8a8e}
+.hkdel:hover{border-color:var(--bad);color:var(--badFg2)}
 .hkadd{margin-top:.5rem;width:100%;background:transparent;border:1px dashed var(--bd2);border-radius:6px;
   color:var(--mut);font-family:inherit;font-size:11.5px;padding:.45rem;cursor:pointer;transition:.12s}
 .hkadd:hover{border-color:var(--acc);color:var(--fg)}
@@ -277,7 +305,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
   cursor:pointer;font-family:inherit;transition:.12s;white-space:nowrap}
 .hkcfg:hover{border-color:var(--acc);color:var(--fg);background:rgba(75,140,247,.1)}
 .hkcfg b{font-size:11px}
-.hkcfg.cta{border-style:solid;border-color:rgba(75,140,247,.55);color:#9cc2ff;
+.hkcfg.cta{border-style:solid;border-color:rgba(75,140,247,.55);color:var(--accFg);
   background:rgba(75,140,247,.12);font-weight:700}
 .hkchip{display:inline-flex;align-items:center;gap:.32rem;flex:0 0 auto;background:var(--panel);
   border:1px solid var(--bd2);border-radius:5px;padding:.24rem .5rem;font-size:11px;color:var(--fg2);

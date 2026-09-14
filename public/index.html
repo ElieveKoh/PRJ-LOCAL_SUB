@@ -7,17 +7,17 @@
 <link rel="stylesheet" href="/common/auth.css">
 <style>
   :root{
-    --bg:#0a0e17; --panel:#0f1522; --panel2:#141c2c; --sunk:#080c14;
-    --line:#1b2434; --line2:#26324a;
-    --fg:#e2e8f2; --fg2:#93a0b4; --mut:#5d6879;
+    --bg:#f3f6fa; --panel:#ffffff; --panel2:#f7f9fc; --sunk:#eef1f6;
+    --line:#e2e7ef; --line2:#d1d9e5;
+    --fg:#131924; --fg2:#4c5869; --mut:#7d8899;
 
-    --ok:#3fae72; --warn:#c2903f; --bad:#c4565a; --live:#e05a52;
-    --steel:#4f8cc9;
+    --ok:#1f9c5d; --bad:#c5333a; --live:#d4453f; --steel:#2f6fb5;
 
-    /* one hue per channel, desaturated enough to sit on a control-room surface */
-    --c-ko:#4f8cc9; --c-en:#4fa88c; --c-ja:#c2904f; --c-zh:#9a7bb8; --c-xx:#7a8699;
+    /* one hue per channel, dark enough to read on paper-white */
+    --c-ko:#2f6fb5; --c-en:#1f8a6d; --c-ja:#a3701f; --c-zh:#7a55a8; --c-xx:#6b7687;
 
     --mono:ui-monospace,SFMono-Regular,Menlo,"Roboto Mono",monospace;
+    --shadow:0 1px 2px rgba(19,25,36,.05);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -26,92 +26,66 @@
     font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     font-size:13px;-webkit-font-smoothing:antialiased;
     display:flex;flex-direction:column;
-    background-image:radial-gradient(1100px 420px at 18% -12%, rgba(79,140,201,.07), transparent 70%);
   }
 
   /* ---------- system bar ---------- */
   .sysbar{
-    flex:0 0 auto;display:flex;align-items:center;gap:1rem;height:48px;padding:0 1rem;
-    background:linear-gradient(180deg,#111a2a,#0c1220);border-bottom:1px solid var(--line);
+    flex:0 0 auto;display:flex;align-items:center;gap:1rem;height:48px;padding:0 1.1rem;
+    background:var(--panel);border-bottom:1px solid var(--line);
   }
   .sysbar-l,.sysbar-r{display:flex;align-items:center;gap:.8rem;min-width:0}
   .sysbar-r{margin-left:auto}
-  .brandlogo{height:11px;width:auto;opacity:.55;filter:brightness(0) invert(1)}
+  .brandlogo{height:11px;width:auto;opacity:.62}
   .vr{width:1px;height:15px;background:var(--line2);flex:0 0 auto}
   .wordmark{font-family:var(--mono);font-size:11px;letter-spacing:.11em;color:var(--fg2)}
+  .adminmark{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--mut);border:1px solid var(--line2);border-radius:3px;padding:.12rem .36rem}
 
-  .health{display:flex;align-items:center;gap:.85rem}
+  .health{display:flex;align-items:center;gap:.9rem}
   .hx{display:flex;align-items:baseline;gap:.38rem;font-family:var(--mono);font-size:10.5px;white-space:nowrap}
   .hx em{font-style:normal;color:var(--mut);letter-spacing:.11em;text-transform:uppercase;font-size:9.5px}
   .hx b{font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--mut);flex:0 0 auto;position:relative;top:-1px}
-  .dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(63,174,114,.15)}
-  .dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(196,86,90,.15)}
-  .dot.live{background:var(--live);box-shadow:0 0 0 3px rgba(224,90,82,.16);animation:pulse 1.8s ease-in-out infinite}
-  @keyframes pulse{50%{opacity:.4}}
+  .dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(31,156,93,.14)}
+  .dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(197,51,58,.14)}
+  .dot.live{background:var(--live);box-shadow:0 0 0 3px rgba(212,69,63,.16);animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.35}}
   @media (prefers-reduced-motion:reduce){.dot.live{animation:none}}
 
-  .idfield{display:flex;align-items:center;gap:.45rem}
-  .idfield label{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)}
-  .idfield input{
-    width:150px;padding:.34rem .55rem;background:var(--sunk);color:var(--fg);
-    border:1px solid var(--line2);border-radius:4px;font-family:inherit;font-size:12px;outline:none;
-  }
-  .idfield input:focus{border-color:var(--steel);box-shadow:0 0 0 3px rgba(79,140,201,.12)}
-  .idfield input::placeholder{color:var(--mut)}
-
   /* ---------- body ---------- */
-  main{flex:1 1 auto;width:100%;max-width:1120px;margin:0 auto;padding:1.4rem 1rem 2.5rem}
+  main{flex:1 1 auto;width:100%;max-width:1060px;margin:0 auto;padding:1.5rem 1.1rem 2.5rem}
 
-  /* ---------- summary tiles ---------- */
-  .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.5rem}
+  /* ---------- summary ---------- */
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.6rem}
   .tile{
-    position:relative;overflow:hidden;padding:.8rem .9rem .85rem;border-radius:7px;
-    background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+    position:relative;overflow:hidden;padding:.85rem 1rem .9rem;border-radius:8px;
+    background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);
   }
-  .tile::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--tone,var(--line2))}
-  .tile em{
-    display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;
-    text-transform:uppercase;color:var(--mut);margin-bottom:.35rem;
-  }
-  .tile b{
-    display:block;font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;
-    color:var(--fg);font-variant-numeric:tabular-nums;
-  }
-  .tile .sub{margin-top:.35rem;font-size:11px;color:var(--mut)}
+  .tile::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tone,var(--line2))}
+  .tile em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--mut);margin-bottom:.4rem}
+  .tile b{display:block;font-family:var(--mono);font-size:28px;font-weight:600;line-height:1;
+    color:var(--fg);font-variant-numeric:tabular-nums}
+  .tile .sub{margin-top:.4rem;font-size:11.5px;color:var(--mut)}
   .tile.hot{--tone:var(--live)}
-  .tile.hot b{color:#f0938c}
+  .tile.hot b{color:var(--live)}
   .tile.on{--tone:var(--ok)}
 
-  /* ---------- host ---------- */
-  .hostrow{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
-  .hostlab{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)}
-  .hostbox{display:flex;align-items:stretch;border:1px solid var(--line2);border-radius:5px;
-    overflow:hidden;background:var(--sunk)}
-  .hostbox code{font-family:var(--mono);font-size:12.5px;color:var(--fg);padding:.44rem .7rem;user-select:all}
-  .iconbtn{
-    display:flex;align-items:center;justify-content:center;width:32px;flex:0 0 auto;cursor:pointer;
-    background:var(--panel2);border:0;border-left:1px solid var(--line2);color:var(--fg2);padding:0;
-  }
-  .iconbtn:hover{background:#1c2740;color:var(--fg)}
-  .iconbtn:active{background:#161f33}
-  .iconbtn svg{width:13px;height:13px;display:block}
-  .hostnote{font-size:11.5px;color:var(--mut)}
-
   /* ---------- section head ---------- */
-  .sec{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .6rem;padding:0 .1rem}
+  .sec{display:flex;align-items:baseline;gap:.6rem;margin:0 0 .6rem;padding:0 .15rem}
   .sec h2{margin:0;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.15em;
     text-transform:uppercase;color:var(--fg2)}
   .sec .hint{font-size:11px;color:var(--mut)}
   .sec .right{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--mut)}
 
   /* ---------- channel matrix ---------- */
-  .matrix{border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel);margin-bottom:1.6rem}
+  .matrix{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);
+    box-shadow:var(--shadow);margin-bottom:1.7rem}
   .mrow{
     /* every track is fixed: each row is its own grid, so an auto track would size to that
        row's own content and the header would stop lining up with the rows beneath it */
-    display:grid;grid-template-columns:3px 52px minmax(0,1fr) 100px 136px 118px 206px;
-    align-items:center;gap:.85rem;padding:.7rem .85rem .7rem 0;border-bottom:1px solid var(--line);
+    display:grid;grid-template-columns:3px 52px minmax(0,1fr) 100px 136px 118px 200px;
+    align-items:center;gap:.85rem;padding:.72rem .9rem .72rem 0;border-bottom:1px solid var(--line);
   }
   .mrow:last-child{border-bottom:0}
   .mhead{background:var(--sunk);padding-top:.45rem;padding-bottom:.45rem}
@@ -121,61 +95,70 @@
 
   .cbadge{
     font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;
-    color:var(--tone,var(--fg2));border:1px solid var(--tone,var(--line2));
+    color:var(--tone,var(--fg2));border:1px solid color-mix(in srgb, var(--tone,#d1d9e5) 45%, transparent);
     border-radius:3px;padding:.18rem 0;text-align:center;
-    background:color-mix(in srgb, var(--tone,#26324a) 14%, transparent);
+    background:color-mix(in srgb, var(--tone,#d1d9e5) 9%, transparent);
   }
   .cname{font-size:13.5px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .cstate{display:flex;align-items:center;gap:.42rem;font-family:var(--mono);font-size:10px;
     letter-spacing:.09em;color:var(--mut)}
-  .cstate.live{color:#f0938c}
-  .cstate.ready{color:#7fcda6}
-  .cstate.standby{color:#d6ab6b}
+  .cstate.live{color:var(--live)}
+  .cstate.ready{color:var(--ok)}
+  .cstate.standby{color:#9a6a1c}
   .ccount{font-family:var(--mono);font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
   .ccount b{color:var(--fg2);font-weight:600}
 
   /* activity strip - one tick per poll, newest at the right */
   .spark{display:flex;align-items:flex-end;gap:1px;height:18px}
-  .spark i{flex:1 1 auto;border-radius:1px;background:#141d2d;height:4px}
-  .spark i.s1{height:9px;background:#2c3d55}
-  .spark i.s2{height:18px;background:var(--live);box-shadow:0 0 6px rgba(224,90,82,.35)}
+  .spark i{flex:1 1 auto;border-radius:1px;background:#e7ebf2;height:4px}
+  .spark i.s1{height:9px;background:#c3ccda}
+  .spark i.s2{height:18px;background:var(--live)}
 
   .cact{display:flex;align-items:center;gap:.4rem;justify-content:flex-end}
   .abtn{
     display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;cursor:pointer;
-    padding:.42rem .72rem;border-radius:4px;font-size:12px;font-weight:600;white-space:nowrap;
-    background:var(--panel2);border:1px solid var(--line2);color:var(--fg2);
+    padding:.42rem .72rem;border-radius:5px;font-size:12px;font-weight:600;white-space:nowrap;
+    background:var(--panel);border:1px solid var(--line2);color:var(--fg2);
   }
-  .abtn:hover{background:#1c2740;border-color:#33456a;color:var(--fg)}
-  .abtn:active{background:#161f33}
-  .abtn.pri:hover{border-color:var(--steel);color:#bcd6f0}
+  .abtn:hover{background:var(--sunk);border-color:#b6c1d2;color:var(--fg)}
+  .abtn:active{background:#e6ebf3}
+  .abtn.pri:hover{border-color:var(--steel);color:var(--steel)}
+  .iconbtn{
+    display:flex;align-items:center;justify-content:center;width:30px;height:28px;flex:0 0 auto;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line2);border-radius:5px;color:var(--fg2);padding:0;
+  }
+  .iconbtn:hover{background:var(--sunk);border-color:#b6c1d2;color:var(--fg)}
+  .iconbtn svg{width:13px;height:13px;display:block}
 
   .empty{padding:1.1rem .9rem;color:var(--mut);font-size:12px}
 
-  /* ---------- session panel ---------- */
-  .info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;
-    border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel)}
-  .kv{padding:.7rem .85rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  /* ---------- session ---------- */
+  .info{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;
+    border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow)}
+  .kv{padding:.72rem .9rem;border-right:1px solid var(--line)}
+  .kv:last-child{border-right:0}
   .kv em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--mut);margin-bottom:.3rem}
   .kv b{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
 
-  footer{max-width:1120px;margin:0 auto;padding:0 1rem 2rem;color:var(--mut);font-size:11.5px;line-height:1.7}
+  footer{max-width:1060px;margin:0 auto;padding:0 1.1rem 2rem;color:var(--mut);font-size:11.5px;line-height:1.7}
   footer code{font-family:var(--mono);background:var(--sunk);border:1px solid var(--line);
     border-radius:3px;padding:.06rem .3rem;color:var(--fg2)}
 
   .toast{
     position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;
-    background:var(--panel2);border:1px solid var(--line2);border-radius:5px;
-    padding:.45rem .8rem;font-family:var(--mono);font-size:11px;color:var(--fg);
+    background:#131924;border:1px solid #131924;border-radius:5px;
+    padding:.45rem .8rem;font-family:var(--mono);font-size:11px;color:#fff;
     opacity:0;pointer-events:none;transition:opacity .15s;
   }
   .toast.on{opacity:1}
 
   @media (max-width:860px){
-    .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .tile b{font-size:22px}
     .info{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .mrow{grid-template-columns:3px 48px minmax(0,1fr);row-gap:.5rem;padding-right:.7rem}
+    .kv{border-bottom:1px solid var(--line)}
+    .mrow{grid-template-columns:3px 48px minmax(0,1fr);row-gap:.5rem;padding-right:.8rem}
     .mhead{display:none}
     .cstate,.ccount,.spark{grid-column:3}
     .cact{grid-column:2/-1;justify-content:flex-start;flex-wrap:wrap}
@@ -190,18 +173,13 @@
     <img class="brandlogo" alt="KISWE">
     <span class="vr"></span>
     <span class="wordmark">prj-livesub</span>
-    <span class="vr"></span>
+    <span class="adminmark">admin</span>
+  </div>
+  <div class="sysbar-r">
     <div class="health">
       <span class="hx"><i class="dot" id="dot"></i><em>server</em><b id="hServer">확인 중</b></span>
       <span class="hx"><em>latency</em><b id="hLatency">—</b></span>
       <span class="hx"><em>uptime</em><b id="hUptime">—</b></span>
-      <span class="hx"><em>net</em><b id="hNet">—</b></span>
-    </div>
-  </div>
-  <div class="sysbar-r">
-    <div class="idfield">
-      <label for="who">Operator ID</label>
-      <input id="who" placeholder="속기1" autocomplete="off" spellcheck="false">
     </div>
   </div>
 </div>
@@ -209,23 +187,8 @@
 <main>
   <div class="tiles">
     <div class="tile" id="tOnair"><em>on air</em><b>0</b><span class="sub">송출 중인 채널</span></div>
-    <div class="tile" id="tCh"><em>channels</em><b>—</b><span class="sub">운영 채널</span></div>
     <div class="tile" id="tTypists"><em>typists</em><b>0</b><span class="sub">접속한 속기사</span></div>
     <div class="tile" id="tOutputs"><em>outputs</em><b>0</b><span class="sub">송출 화면</span></div>
-  </div>
-
-  <div class="hostrow">
-    <span class="hostlab">host</span>
-    <span class="hostbox">
-      <code id="host">—</code>
-      <button class="iconbtn" id="copyHost" type="button" title="주소 복사" aria-label="주소 복사">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
-          <rect x="5.6" y="5.6" width="8" height="8" rx="1.4"/>
-          <path d="M10.4 3.4V2.9A1.5 1.5 0 0 0 8.9 1.4H3.4A1.5 1.5 0 0 0 1.9 2.9v5.5a1.5 1.5 0 0 0 1.5 1.5h.5"/>
-        </svg>
-      </button>
-    </span>
-    <span class="hostnote">이 주소를 다른 PC 브라우저에 그대로 입력하면 같은 화면이 열립니다.</span>
   </div>
 
   <div class="sec">
@@ -237,13 +200,12 @@
     <div class="empty">채널 정보를 불러오는 중…</div>
   </div>
 
-  <div class="sec"><h2>세션</h2></div>
+  <div class="sec"><h2>설정</h2></div>
   <div class="info" id="info"></div>
 </main>
 
 <footer>
-  송출 화면은 스위처의 Web source에 URL을 그대로 넣는 것이 기본 경로입니다.
-  각 행의 링크 아이콘은 투명 배경(<code>bgMode=transparent</code>) URL을 복사합니다.
+  각 행의 링크 아이콘은 스위처 Web source용 투명 배경(<code>bgMode=transparent</code>) URL을 복사합니다.
   자막 모양을 바꾸려면 송출 화면 우상단 설정에서 조정한 뒤 그 화면의 <code>URL 복사</code>를 쓰세요.
 </footer>
 
@@ -253,31 +215,24 @@
 <script src="/common/auth.js"></script>
 <script>
 (function () {
-  const NAME_KEY = 'sub.typist.name';
   const TICKS = 40;                 // 40 polls x 3s = the last two minutes
   const $ = (id) => document.getElementById(id);
-  const who = $('who');
 
   let cfg = null;
   let status = null;
   const hist = {};                  // code -> [0 idle, 1 staffed, 2 on air]
 
-  who.value = localStorage.getItem(NAME_KEY) || '';
-  who.addEventListener('input', () => {
-    localStorage.setItem(NAME_KEY, who.value.trim());
-    renderMatrix();
-  });
-
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const tone = (code) => 'var(--c-' + (['ko', 'en', 'ja', 'zh'].indexOf(code) >= 0 ? code : 'xx') + ')';
 
+  // This page is for whoever runs the show. Typists are handed a typist URL directly and
+  // never come through here, so there is no name field: they set their own on their screen.
   function links(code) {
-    const name = (localStorage.getItem(NAME_KEY) || '').trim();
     const pw = SubAuth.token();
     const q = (extra) => '?lang=' + encodeURIComponent(code)
       + (pw ? '&pw=' + encodeURIComponent(pw) : '') + (extra || '');
     return {
-      typist: '/typist' + q(name ? '&name=' + encodeURIComponent(name) : ''),
+      typist: '/typist' + q(''),
       output: '/broadcast' + q(''),
       // the switcher takes the page as a web source; transparent is the production path
       source: location.origin + '/broadcast' + q('&bgMode=transparent'),
@@ -311,7 +266,6 @@
     try { document.execCommand('copy'); done(); } catch (e) { toast('복사 실패 — 수동으로 선택하세요'); }
     ta.remove();
   }
-  $('copyHost').addEventListener('click', () => copy(location.origin, '주소를 복사했습니다'));
 
   // ---------- health ----------
   function setHealth(online, ms) {
@@ -323,12 +277,6 @@
     const s = Math.max(0, Math.floor(ms / 1000));
     const p = (n) => String(n).padStart(2, '0');
     return p(Math.floor(s / 3600)) + ':' + p(Math.floor(s / 60) % 60) + ':' + p(s % 60);
-  }
-  function netLabel() {
-    const h = location.hostname;
-    if (h === 'localhost' || h === '127.0.0.1' || h === '::1') return 'LOCAL';
-    if (/^\d+\.\d+\.\d+\.\d+$/.test(h) || h.endsWith('.local')) return 'LAN';
-    return h.toUpperCase();
   }
 
   // ---------- state ----------
@@ -356,7 +304,6 @@
     return out + '</span>';
   }
 
-  // ---------- tiles ----------
   function renderTiles() {
     const langs = (cfg && cfg.languages) || [];
     let onair = 0, typists = 0, outputs = 0;
@@ -373,12 +320,10 @@
       el.className = 'tile' + (cls ? ' ' + cls : '');
     };
     set('tOnair', onair, onair ? 'hot' : '');
-    set('tCh', langs.length, '');
     set('tTypists', typists, typists ? 'on' : '');
     set('tOutputs', outputs, outputs ? 'on' : '');
   }
 
-  // ---------- matrix ----------
   function renderMatrix() {
     if (!cfg) return;
     const langs = cfg.languages || [];
@@ -404,7 +349,6 @@
         +   '<a class="abtn pri" target="_blank" rel="noopener" href="' + lk.typist + '">타이피스트</a>'
         +   '<a class="abtn" target="_blank" rel="noopener" href="' + lk.output + '">송출</a>'
         +   '<button class="iconbtn" type="button" data-src="' + esc(lk.source) + '" '
-        +     'style="width:30px;height:28px;border:1px solid var(--line2);border-radius:4px" '
         +     'title="스위처 Web source용 투명 배경 URL 복사" aria-label="송출 URL 복사">'
         +     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">'
         +     '<path d="M6.6 9.4a2.6 2.6 0 0 0 3.9.3l2-2a2.6 2.6 0 0 0-3.7-3.7l-1.1 1.1"/>'
@@ -421,19 +365,15 @@
     });
   }
 
-  // ---------- session panel ----------
   function renderInfo() {
     if (!cfg) return;
     const room = cfg.room || {};
     const rows = [
-      ['host', location.host],
-      ['channels', (cfg.languages || []).map((l) => l.code.toUpperCase()).join(' · ')],
       ['default delay', ((room.defaultDelayMs || 0) / 1000).toFixed(1) + ' s'],
       ['max delay', ((room.maxDelayMs || 0) / 1000).toFixed(1) + ' s'],
       ['buffer', (room.bufferSize || 0) + ' lines'],
       ['password', cfg.authRequired ? 'ON' : 'OFF'],
       ['video source', (cfg.video && cfg.video.url) ? '연결됨' : '미설정'],
-      ['max lines', ((cfg.defaultSettings || {}).maxLines || 0) + ' lines'],
     ];
     $('info').innerHTML = rows
       .map(([k, v]) => '<div class="kv"><em>' + k + '</em><b>' + esc(v) + '</b></div>')
@@ -466,8 +406,6 @@
     .then((r) => r.json())
     .then((c) => {
       cfg = c;
-      $('host').textContent = location.origin;
-      $('hNet').textContent = netLabel();
       renderTiles();
       renderMatrix();
       renderInfo();
