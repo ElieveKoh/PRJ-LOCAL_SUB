@@ -31,7 +31,6 @@
   <div class="bar-grp right">
     <span class="peerlabel" data-i18n="connected">연결된 사람</span>
     <div class="peers" id="peers"></div>
-    <button class="layoutbtn" id="layoutBtn" type="button"></button>
     <div class="uilang" id="uiLang" role="group" aria-label="UI language">
       <button data-ui="ko">한국어</button><button data-ui="en">EN</button>
     </div>
@@ -39,6 +38,8 @@
 </header>
 
 <main class="grid" id="grid">
+  <!-- sits on the divider itself: the control is where the thing it moves is -->
+  <button class="swapbtn" id="swapBtn" type="button" aria-label="swap">⇄</button>
   <section class="pane pane-video">
     <div class="video" id="video">
       <div class="video-hud">
@@ -56,6 +57,10 @@
         <div class="ph-s" data-i18n-html="noVideoSub"></div>
       </div>
       <div class="overlay" id="overlay"></div>
+      <!-- the overlay only ever shows what a real output screen reports, so when none is
+           connected it is empty for a reason. Say that here, over the picture the typist is
+           already looking at - the footer warning is too far from the question being asked. -->
+      <div class="video-note" id="videoNote" hidden data-i18n="ovNoOutput"></div>
     </div>
   </section>
 

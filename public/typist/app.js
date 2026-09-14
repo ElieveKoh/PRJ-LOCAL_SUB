@@ -6,7 +6,7 @@
     telDelay: $('telDelay'), telSync: $('telSync'), telBuffer: $('telBuffer'),
     peers: $('peers'), uiLang: $('uiLang'),
     video: $('video'), videoPh: $('videoPh'), overlay: $('overlay'),
-    grid: $('grid'), layoutBtn: $('layoutBtn'),
+    grid: $('grid'), swapBtn: $('swapBtn'), videoNote: $('videoNote'),
     timecode: $('timecode'), proto: $('proto'),
     monitor: $('monitor'), monitorBody: $('monitorBody'), monitorWho: $('monitorWho'),
     history: $('history'), histCount: $('histCount'),
@@ -45,9 +45,9 @@
 
   function renderLayout() {
     el.grid.dataset.layout = layout;
-    el.layoutBtn.textContent = T(layout === 'video' ? 'layoutText' : 'layoutVideo');
+    el.swapBtn.title = T('swapTip');
   }
-  el.layoutBtn.addEventListener('click', () => {
+  el.swapBtn.addEventListener('click', () => {
     layout = layout === 'video' ? 'text' : 'video';
     try { localStorage.setItem(LAYOUT_KEY, layout); } catch (e) {}
     renderLayout();
@@ -114,6 +114,8 @@
     else if (failed) setTel(el.telBuffer, `${T('bufFail')} ${failed}`, 'bad');
     else if (waiting) setTel(el.telBuffer, `${T('bufWait')} ${waiting}`, waiting > 2 ? 'warn' : '');
     else setTel(el.telBuffer, T('bufOk'), 'ok');
+
+    el.videoNote.hidden = !(online && bc === 0);
 
     el.warn.textContent = !online ? T('warnOffline')
       : dupName ? T('warnDupName')

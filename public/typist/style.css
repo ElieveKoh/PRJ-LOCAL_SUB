@@ -73,7 +73,7 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
    watching a feed wants the picture large, transcribing wants the history and the other
    typist large. The monitor stays in the wide column either way - it sits closest to the
    input box, which is where the eye already is. */
-.grid{flex:1 1 auto;display:grid;grid-template-columns:minmax(0,1fr) 372px;
+.grid{position:relative;flex:1 1 auto;display:grid;grid-template-columns:minmax(0,1fr) 372px;
   grid-template-rows:minmax(0,1fr) auto;gap:10px;padding:10px;min-height:0}
 .pane{display:flex;flex-direction:column;min-height:0;min-width:0;gap:10px}
 .pane-mon{grid-column:1;grid-row:2}
@@ -87,9 +87,14 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .grid[data-layout="text"] .pane-video{grid-column:2;grid-row:1;align-self:start}
 .grid[data-layout="text"] .video{flex:0 0 auto;aspect-ratio:16/9;min-height:0}
 
-.layoutbtn{background:var(--sunk);border:1px solid var(--bd2);border-radius:var(--r);color:var(--fg2);
-  font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.06em;padding:.3rem .5rem;cursor:pointer}
-.layoutbtn:hover{border-color:var(--acc);color:#cfe0ff}
+/* The two columns never move - only which panel sits in each - so the divider is always in
+   the same place and the handle can live on it permanently. */
+.swapbtn{position:absolute;top:50%;right:calc(372px + 5px);transform:translate(50%,-50%);
+  z-index:6;width:17px;height:52px;padding:0;cursor:pointer;
+  background:var(--panel2);border:1px solid var(--bd2);border-radius:5px;
+  color:var(--mut);font-family:inherit;font-size:11px;line-height:1;
+  display:flex;align-items:center;justify-content:center}
+.swapbtn:hover{border-color:var(--acc);color:#cfe0ff;background:var(--sunk)}
 
 .tabs{display:flex;align-items:center;gap:.3rem;padding:0 .1rem .5rem}
 .tab{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);
@@ -135,6 +140,11 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
   text-shadow:0 0 1px #000,1.4px 0 0 #000,-1.4px 0 0 #000,0 1.4px 0 #000,0 -1.4px 0 #000,1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;
   max-width:100%;word-break:break-word}
 .hud-right{display:flex;align-items:center;gap:.3rem}
+/* a system note, not a subtitle - it must never be mistaken for something going to air */
+.video-note{position:absolute;left:50%;bottom:.6rem;transform:translateX(-50%);z-index:4;
+  max-width:92%;text-align:center;font-size:11px;line-height:1.5;color:var(--warn);
+  background:rgba(5,7,10,.86);border:1px solid rgba(230,162,51,.4);border-radius:var(--r);
+  padding:.34rem .6rem;pointer-events:none}
 .refmark{color:var(--warn);background:rgba(5,7,10,.72);border:1px solid rgba(230,162,51,.4);
   border-radius:4px;padding:.14rem .4rem;letter-spacing:.06em;cursor:help;pointer-events:auto}
 /* the transport tag is also the resync control, so it has to take clicks back from the HUD */
