@@ -15,6 +15,10 @@
    Audio is the part typists actually work from, but browsers refuse to autoplay a page with
    sound. So playback starts muted and the panel offers a single click to turn sound on. */
 (function (global) {
+  // Controls created here are labelled once, at build time. The UI language can change
+  // afterwards, so the page needs a way to ask for those labels again.
+  let relabel = () => {};
+
   const HLS_LIB = '/vendor/hls/hls.min.js';
   const SLDP_LIB = '/vendor/sldp/sldp.js';
   const RETRY_MS = 3000;
@@ -44,6 +48,10 @@
     let retryTimer = null;
     let node = null;
     let stopWatchdog = null;
+    // Sound is the typist's own choice and has to survive a resync or a reconnect, both of
+    // which build a fresh element. Playback still has to START muted - that is the only way
+    // a browser lets it start at all - so the preference is re-applied once it is running.
+    let wantSound = false;
 
     function setStatus(text, state) {
       if (!status) return;
@@ -66,6 +74,7 @@
       if (node && node.destroy) node.destroy();
       if (node && node.el && node.el.parentNode) node.el.remove();
       node = null;
+      relabel = () => {};
       const btn = box.querySelector('.video-sound');
       if (btn) btn.remove();
     }
@@ -89,6 +98,7 @@
       v.addEventListener('playing', () => {
         ph.hidden = true;
         setStatus(t('vLive'), 'ok');
+        if (wantSound && v.muted) { v.muted = false; v.volume = 1; }
       });
       // Liveness is judged from the picture, not from the player's error events: a live
       // playlist that starts 404ing is retried forever and never reported as fatal, so the
@@ -113,17 +123,25 @@
       return v;
     }
 
+    // A one-shot "turn sound on" leaves no way back. Typists share a room, so muting again
+    // has to be as cheap as unmuting - the control stays and reads as a toggle.
     function addSoundButton(v) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'video-sound';
-      btn.textContent = t('vSoundOn');
+      function sync() {
+        btn.textContent = v.muted ? t('vSoundOn') : t('vMute');
+        btn.classList.toggle('on', !v.muted);
+      }
       btn.addEventListener('click', () => {
-        v.muted = false;
-        v.volume = 1;
-        v.play().catch(() => {});
-        btn.remove();
+        v.muted = !v.muted;
+        wantSound = !v.muted;
+        if (!v.muted) { v.volume = 1; v.play().catch(() => {}); }
+        sync();
       });
+      v.addEventListener('volumechange', sync);
+      relabel = sync;
+      sync();
       box.appendChild(btn);
     }
 
@@ -180,6 +198,13 @@
       else startEmbed(sourceUrl);
     }
 
+    // Clicking the transport tag restarts the player. A live stream that has been sitting in a
+    // background tab drifts behind the edge, and there is no way to see that from the picture -
+    // so the fix has to be one obvious click rather than a page reload that also drops history.
+    if (status) {
+      status.addEventListener('click', () => { if (sourceUrl) start(); });
+    }
+
     const override = (opts.override || '').trim();
     if (override) {
       sourceUrl = override;
@@ -195,5 +220,5 @@
       .catch(() => {});
   }
 
-  global.SubVideo = { mount };
+  global.SubVideo = { mount, relabel: () => relabel() };
 })(window);

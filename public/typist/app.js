@@ -6,6 +6,7 @@
     telDelay: $('telDelay'), telSync: $('telSync'), telBuffer: $('telBuffer'),
     peers: $('peers'), uiLang: $('uiLang'),
     video: $('video'), videoPh: $('videoPh'), overlay: $('overlay'),
+    grid: $('grid'), layoutBtn: $('layoutBtn'),
     timecode: $('timecode'), proto: $('proto'),
     monitor: $('monitor'), monitorBody: $('monitorBody'), monitorWho: $('monitorWho'),
     history: $('history'), histCount: $('histCount'),
@@ -35,6 +36,24 @@
 
   document.title = `[${conn.lang}] 자막 입력`;
 
+  // Layout is a seat preference, not a room setting - it stays in this browser, the same way
+  // hotkeys do. 'video' keeps the picture in the wide column; 'text' gives that column to the
+  // history and the other typist's line, which is what matters once a show is actually running.
+  const LAYOUT_KEY = 'sub.layout';
+  let layout = 'video';
+  try { layout = localStorage.getItem(LAYOUT_KEY) === 'text' ? 'text' : 'video'; } catch (e) {}
+
+  function renderLayout() {
+    el.grid.dataset.layout = layout;
+    el.layoutBtn.textContent = T(layout === 'video' ? 'layoutText' : 'layoutVideo');
+  }
+  el.layoutBtn.addEventListener('click', () => {
+    layout = layout === 'video' ? 'text' : 'video';
+    try { localStorage.setItem(LAYOUT_KEY, layout); } catch (e) {}
+    renderLayout();
+  });
+  renderLayout();
+
   SubVideo.mount({
     box: el.video,
     placeholder: el.videoPh,
@@ -47,6 +66,10 @@
   function applyStatic() {
     document.querySelectorAll('[data-i18n]').forEach((n) => { n.textContent = T(n.dataset.i18n); });
     document.querySelectorAll('[data-i18n-html]').forEach((n) => { n.innerHTML = T(n.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-title]').forEach((n) => { n.title = T(n.dataset.i18nTitle); });
+    el.proto.title = T('vResyncTip');
+    SubVideo.relabel();
+    renderLayout();
     el.input.placeholder = T('placeholder');
     el.langName.textContent = I18N.langName(conn.lang);
     el.langCode.textContent = conn.lang.toUpperCase();

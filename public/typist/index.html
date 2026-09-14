@@ -31,18 +31,24 @@
   <div class="bar-grp right">
     <span class="peerlabel" data-i18n="connected">연결된 사람</span>
     <div class="peers" id="peers"></div>
+    <button class="layoutbtn" id="layoutBtn" type="button"></button>
     <div class="uilang" id="uiLang" role="group" aria-label="UI language">
       <button data-ui="ko">한국어</button><button data-ui="en">EN</button>
     </div>
   </div>
 </header>
 
-<main class="grid">
-  <section class="col-left">
+<main class="grid" id="grid">
+  <section class="pane pane-video">
     <div class="video" id="video">
       <div class="video-hud">
         <span class="tc" id="timecode">SESSION 00:00:00</span>
-        <span class="proto" id="proto" data-i18n="noSignal">NO SIGNAL</span>
+        <span class="hud-right">
+          <!-- the picture and the studio's own feed travel different paths, so what lines up
+               here is not what lines up on air. Say so where the picture is, every time. -->
+          <span class="refmark" id="refMark" data-i18n="refOnly" data-i18n-title="refOnlyTip">참고용</span>
+          <span class="proto" id="proto" data-i18n="noSignal">NO SIGNAL</span>
+        </span>
       </div>
       <div class="video-ph" id="videoPh">
         <div class="ph-icon">▶</div>
@@ -50,16 +56,10 @@
         <div class="ph-s" data-i18n-html="noVideoSub"></div>
       </div>
       <div class="overlay" id="overlay"></div>
-      <div class="overlay-tag" data-i18n="preview">송출 미리보기</div>
-    </div>
-
-    <div class="monitor" id="monitor">
-      <div class="sec-h"><span data-i18n="monitor">실시간 모니터링</span><span class="sec-s" id="monitorWho"></span></div>
-      <div class="monitor-body" id="monitorBody"></div>
     </div>
   </section>
 
-  <section class="col-right">
+  <section class="pane pane-hist">
     <div class="tabs">
       <span class="tab on" data-i18n="tabHistory">최근 전송</span>
       <span class="sec-s" id="histCount"></span>
@@ -67,6 +67,13 @@
 
     <!-- newest at the bottom, the way subtitles actually stack on screen -->
     <ul class="history" id="history"></ul>
+  </section>
+
+  <section class="pane pane-mon">
+    <div class="monitor" id="monitor">
+      <div class="sec-h"><span data-i18n="monitor">실시간 모니터링</span><span class="sec-s" id="monitorWho"></span></div>
+      <div class="monitor-body" id="monitorBody"></div>
+    </div>
   </section>
 </main>
 
