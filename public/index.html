@@ -12,6 +12,8 @@
          margin:0; padding:2rem 1rem; background:#f0f2f5; color:#111; }
   .container { max-width:860px; margin:0 auto; background:#fff; padding:2rem;
                border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+  /* light card, so the logotype is used as-is - no inversion */
+  .brandlogo { display:block; height:15px; width:auto; margin:0 auto 1.1rem; opacity:.45; }
   h1 { text-align:center; margin:0 0 .5rem; font-size:1.5rem; }
   .net { text-align:center; color:var(--mut); font-size:.85rem; margin-bottom:2rem; line-height:1.7; }
   .net code { background:#f3f4f6; padding:.15rem .4rem; border-radius:4px; font-size:.85rem; user-select:all; }
@@ -34,6 +36,7 @@
 </head>
 <body>
 <div class="container">
+  <img class="brandlogo" alt="KISWE">
   <h1>🎙️ 실시간 자막 대시보드</h1>
   <div class="net" id="net">서버 정보 확인 중…</div>
   <div class="name-row">
@@ -43,6 +46,7 @@
   <div id="channels">채널 정보를 불러오는 중입니다…</div>
 </div>
 
+<script src="/common/brand.js"></script>
 <script src="/common/auth.js"></script>
 <script>
 const NAME_KEY = 'sub.typist.name';

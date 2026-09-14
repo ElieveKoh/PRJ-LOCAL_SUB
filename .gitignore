@@ -9,3 +9,6 @@ npm-debug.log*
 config.local.json
 .env
 .env.*
+
+# company logo: brand asset, kept out of the public repo (same rule as USER_CTRL)
+public/assets/kiswe-logo.png

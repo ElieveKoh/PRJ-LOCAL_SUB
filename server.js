@@ -61,6 +61,9 @@ app.post('/api/login', (req, res) => {
 app.get('/typist', (req, res) => res.sendFile(path.join(__dirname, 'public/typist/index.html')));
 app.get('/broadcast', (req, res) => res.sendFile(path.join(__dirname, 'public/broadcast/index.html')));
 
+// hls.js is served from the app, not a CDN: a venue LAN has no internet.
+app.use('/vendor/hls', express.static(path.join(__dirname, 'node_modules/hls.js/dist')));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---- socket relay ----

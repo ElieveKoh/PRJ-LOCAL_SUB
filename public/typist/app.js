@@ -35,16 +35,13 @@
 
   document.title = `[${conn.lang}] 자막 입력`;
 
-  const video = conn.param('video', '');
-  if (video) {
-    const f = document.createElement('iframe');
-    f.src = encodeURI(video);
-    f.allow = 'autoplay; fullscreen';
-    el.video.insertBefore(f, el.videoPh);
-    el.videoPh.hidden = true;
-    el.proto.textContent = 'EMBED';
-    el.proto.removeAttribute('data-i18n');
-  }
+  SubVideo.mount({
+    box: el.video,
+    placeholder: el.videoPh,
+    statusEl: el.proto,
+    override: conn.param('video', ''),
+    t: T,
+  });
 
   // ---------- i18n ----------
   function applyStatic() {

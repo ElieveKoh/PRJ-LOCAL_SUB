@@ -21,6 +21,10 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .telemetry{flex:1 1 auto;justify-content:flex-start;gap:.4rem}
 .peers{flex:0 0 auto;justify-content:flex-end;gap:.35rem;border-radius:var(--r);padding:.15rem}
 
+/* company wordmark: a dark logotype on transparent, so it is inverted for this dark
+   console and held back to label weight - it identifies the maker, it is not the title. */
+.brandlogo{height:11px;width:auto;opacity:.5;filter:brightness(0) invert(1)}
+.brand-sep{width:1px;height:13px;background:var(--bd2);flex:0 0 auto}
 .wordmark{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--mut)}
 .onair{display:inline-flex;align-items:center;gap:.4rem;padding:.28rem .55rem;border-radius:var(--r);
   border:1px solid var(--bd2);background:var(--sunk)}
@@ -90,6 +94,16 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .proto{color:var(--mut);background:rgba(5,7,10,.72);border:1px solid var(--bd);border-radius:4px;
   padding:.14rem .4rem;letter-spacing:.08em}
 .video-ph{text-align:center;color:#3b4552;line-height:1.7;z-index:1}
+/* the HUD tag doubles as the transport state, so it carries colour */
+.proto[data-state="ok"]{color:var(--ok);border-color:rgba(47,191,109,.4)}
+.proto[data-state="warn"]{color:var(--warn);border-color:rgba(230,162,51,.4)}
+.proto[data-state="bad"]{color:var(--bad);border-color:rgba(229,72,77,.4)}
+/* browsers refuse to autoplay with sound, so the panel asks for the one click */
+.video-sound{position:absolute;right:.55rem;bottom:.55rem;z-index:3;cursor:pointer;
+  padding:.34rem .62rem;border-radius:var(--r);border:1px solid var(--bd2);
+  background:rgba(11,14,18,.88);color:var(--fg);font-family:inherit;font-size:11px;font-weight:700}
+.video-sound:hover{border-color:var(--acc);color:#cfe0ff}
+.video-sldp{position:absolute;inset:0}
 .ph-icon{font-size:1.6rem;opacity:.45}
 .ph-t{font-size:12px;font-weight:600;color:#4b5665}
 .ph-s{font-size:10.5px;color:#3b4552}
