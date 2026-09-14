@@ -73,8 +73,10 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
    watching a feed wants the picture large, transcribing wants the history and the other
    typist large. The monitor stays in the wide column either way - it sits closest to the
    input box, which is where the eye already is. */
-.grid{position:relative;flex:1 1 auto;display:grid;grid-template-columns:minmax(0,1fr) 372px;
-  grid-template-rows:minmax(0,1fr) auto;gap:10px;padding:10px;min-height:0}
+.grid{--pad:10px;--side:372px;--rail:24px;
+  position:relative;flex:1 1 auto;display:grid;grid-template-columns:minmax(0,1fr) var(--side);
+  grid-template-rows:minmax(0,1fr) auto;row-gap:var(--pad);column-gap:var(--rail);
+  padding:var(--pad);min-height:0}
 .pane{display:flex;flex-direction:column;min-height:0;min-width:0;gap:10px}
 .pane-mon{grid-column:1;grid-row:2}
 
@@ -88,13 +90,25 @@ body{margin:0;background:var(--bg);color:var(--fg);overflow:hidden;
 .grid[data-layout="text"] .video{flex:0 0 auto;aspect-ratio:16/9;min-height:0}
 
 /* The two columns never move - only which panel sits in each - so the divider is always in
-   the same place and the handle can live on it permanently. */
-.swapbtn{position:absolute;top:50%;right:calc(372px + 5px);transform:translate(50%,-50%);
-  z-index:6;width:17px;height:52px;padding:0;cursor:pointer;
-  background:var(--panel2);border:1px solid var(--bd2);border-radius:5px;
-  color:var(--mut);font-family:inherit;font-size:11px;line-height:1;
+   the same place. The column gap is widened to hold the control, which means the rail owns
+   that strip outright and never sits on top of a panel's content.
+   At rest it is only a hairline; the whole strip is the hit area, and hovering anywhere on it
+   lights the line and raises a real button, so the control is findable without being noise. */
+.swapbtn{position:absolute;top:var(--pad);bottom:var(--pad);
+  right:calc(var(--side) + var(--pad));width:var(--rail);
+  z-index:6;padding:0;border:0;background:transparent;cursor:pointer;
   display:flex;align-items:center;justify-content:center}
-.swapbtn:hover{border-color:var(--acc);color:#cfe0ff;background:var(--sunk)}
+.swapbtn::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;
+  transform:translateX(-50%);background:var(--bd);transition:background .12s,width .12s}
+.swapbtn span{position:relative;display:flex;align-items:center;justify-content:center;
+  width:22px;height:46px;border-radius:6px;font-size:12px;line-height:1;
+  color:var(--bd2);background:transparent;border:1px solid transparent;
+  transition:color .12s,background .12s,border-color .12s,box-shadow .12s}
+.swapbtn:hover::before,.swapbtn:focus-visible::before{background:var(--acc);width:2px}
+.swapbtn:hover span,.swapbtn:focus-visible span{color:#cfe0ff;background:var(--panel2);
+  border-color:var(--acc);box-shadow:0 0 0 3px rgba(75,140,247,.15)}
+.swapbtn:active span{background:var(--sunk)}
+.swapbtn:focus{outline:none}
 
 .tabs{display:flex;align-items:center;gap:.3rem;padding:0 .1rem .5rem}
 .tab{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);

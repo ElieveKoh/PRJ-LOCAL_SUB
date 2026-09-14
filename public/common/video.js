@@ -198,6 +198,16 @@
       else startEmbed(sourceUrl);
     }
 
+    // A page opened in a background tab can attach a player that then never fetches a single
+    // segment - it sits at CONNECTING with no error, and nothing recovers it because nothing
+    // failed. So when the tab is actually looked at, check that the picture exists and rebuild
+    // it if it does not. A tab that merely went to the background just needs play() again.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || !node || !node.el || node.el.tagName !== 'VIDEO') return;
+      if (node.el.readyState === 0) start();
+      else node.el.play().catch(() => {});
+    });
+
     // Clicking the transport tag restarts the player. A live stream that has been sitting in a
     // background tab drifts behind the edge, and there is no way to see that from the picture -
     // so the fix has to be one obvious click rather than a page reload that also drops history.
