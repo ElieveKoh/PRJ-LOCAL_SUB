@@ -14,3 +14,6 @@ config.runtime.json
 
 # company logo: brand asset, kept out of the public repo (same rule as USER_CTRL)
 public/assets/kiswe-logo.png
+
+# local HLS test capture: regenerated on demand, never part of the app
+public/teststream/
