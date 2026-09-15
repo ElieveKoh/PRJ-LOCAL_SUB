@@ -20,6 +20,9 @@
   // The page may be rendered on a machine we do not control (a switcher PC, or a cloud
   // renderer), which will not have Korean/Japanese/Chinese fonts installed. Ship the face
   // with the page instead of hoping the host has it - otherwise subtitles render as tofu.
+  // This is a networked tool, so the fetch is fine; what it must not be is load-bearing.
+  // If it is slow, blocked by a corporate proxy, or simply fails, the fallback chain in
+  // config.json names a real CJK face for every OS and the picture still goes out.
   const WEBFONT = { ko: 'Noto+Sans+KR', ja: 'Noto+Sans+JP', zh: 'Noto+Sans+SC' };
   (function loadFont() {
     const fam = WEBFONT[conn.lang];

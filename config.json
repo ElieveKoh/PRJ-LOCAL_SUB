@@ -37,7 +37,7 @@
     "textColor": "#FFFFFF",
     "outlineColor": "#000000",
     "outlineWidth": 2,
-    "fontFamily": "'Noto Sans KR','Noto Sans JP','Noto Sans SC',Pretendard,-apple-system,sans-serif",
+    "fontFamily": "'Noto Sans KR','Noto Sans JP','Noto Sans SC','Noto Sans','Noto Sans CJK KR','Malgun Gothic','Apple SD Gothic Neo',Pretendard,'Yu Gothic','Hiragino Sans','Microsoft YaHei','PingFang SC',-apple-system,sans-serif",
     "fontSize": 48,
     "fontWeight": 700,
     "letterSpacing": 0,
